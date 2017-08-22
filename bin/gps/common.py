@@ -5,6 +5,7 @@ import re
 import os
 import sqlite3
 from ..common import open_gps_database
+from ..common import fixup_encode
 from ..common import logger
 
 def open_database():

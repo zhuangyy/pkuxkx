@@ -9,6 +9,7 @@ from ..common import Tintin
 from ..common import logger
 
 def get_room(conn, desc):
+    desc = fixup_encode(desc)
     room = fixup_room(desc)
     # gt yz
     # gt 醉仙楼

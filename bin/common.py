@@ -15,6 +15,9 @@ logger.addHandler(_handler)
 def open_gps_database():
     return sqlite3.connect("db/rooms.db")
 
+def fixup_encode(s):
+    return s.encode('utf-8', 'surrogateescape').decode('gbk')
+
 import uuid
 
 class Tintin:

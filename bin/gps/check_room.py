@@ -8,6 +8,10 @@ from ..common import Tintin
 from ..common import logger
 
 def check_room (conn, zone, room, desc, exits):
+    room = fixup_encode(room)
+    zone = fixup_encode(zone)
+    desc = fixup_encode(desc)
+
     room = fixup_room(room)
     sql = "select roomno from mud_room where roomname = '%s'" % (room)
     rows = conn.execute(sql).fetchall();

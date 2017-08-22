@@ -8,6 +8,7 @@ from ..common import Tintin
 from ..common import logger
 
 def get_area(conn, desc):
+    desc = fixup_encode(desc)
     desc = fixup_area(desc)
     sql = "select distinct(zone) from mud_room";
     rows = conn.execute(sql).fetchall()
