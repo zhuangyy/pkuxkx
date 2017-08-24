@@ -1,0 +1,54 @@
+#class peiyao open;
+#tab peiyao.start;
+#tab peiyao.stop;
+
+#var peiyao_count 1;
+#alias {peiyao.start} {
+    #class peiyao.inner open;
+    #alias {peiyao.restart} {
+        gt 扬州药铺;
+        on_there {
+            start_ticker;
+        };
+    };
+
+    #alias {start_ticker} {
+        #ticker {peiyao} {
+            ask ping about 工作;
+        } {1};
+    };
+
+    #alias {stop_ticker} {
+        #unticker {peiyao};
+    };
+
+    #action {平一指说道：「我们现在正好缺少一种药，这是药方，你去配吧」} {
+        n;
+        peiyao;
+    };
+
+    #action {不知过了多久，你终于把药配完。} {
+        s;
+        give ping yao;
+    };
+
+    #action {平一指笑呵呵接过你配好的药，说：谢谢这位道兄} {
+        stop_ticker;
+        start_ticker;
+    };
+
+    #action {平一指说道：「在我这里配药太埋没您拉，您还是去干点别的吧。」} {
+        peiyao.stop;
+    };
+    #class peiyao.inner close;
+
+    show_to_quest 配药开始;
+    peiyao.restart;
+};
+
+#alias {peiyao.stop} {
+    #class peiyao.inner kill;
+    #unticker {peiyao};
+    show_to_quest 配药结束;
+};
+#class peiyao close;
