@@ -5,6 +5,15 @@
     on_there {
         ask chongxu about cancel;
         #var task_running 0;
+        show_to_quest 取消任务成功;
+    };
+};
+#alias {newbie.q.success} {
+    gt wd;
+    on_there {
+        ask chongxu about success;
+        #class newbie_wd.waitquest kill;
+        #var task_running 0;
     };
 };
 #alias {newbie.q} {
@@ -15,25 +24,135 @@
         #nop showme 你向冲虚道长打听有关『quest』的消息。;
         #nop showme 我们就从最简单的五行阵开始吧，旁边小校场上有教习教大家怎么行走五行阵。」;
         #nop showme 庄亦邪一会儿站在水位;
+        #nop showme 冲虚道长说道：「今天全派弟子要在俞岱岩住处熟读典籍，据说要诵唱庄子·杂篇「上卷」的庄子·杂篇·庚桑楚(12);
+        #nop showme ==                    道可道非常道名可名非                    ==;
+        #nop showme ==                    道可道非常道名可名非                    ==;
+        #nop showme =============================================================;
+        #nop var sj_book 庄子·内篇「上卷」;
+        #nop var sj_article 庄子·内篇·逍遥游;
+        #nop var sj_page 18;
+        #nop newbie.sj.check;
     };
 
-    #alias {newbie.songjing} {
+    #alias {newbie.sj.return} {
+        gt 复真观二层;
+        on_there {
+            give jing to zhike;
+        };
+    };
+
+    #alias {newbie.sj.check} {
+        #class newbie_wd.sj.check open;
+        #var sj_book %0;
+        #var sj_article %1;
+        #var sj_page %2;
+
+        #action {==%s%S%s==} {
+            #nop if {"$sj_start_page" != "0"}
+            #var xj_content %%%1;
+            #var sj_content ${sj_content}%%%2;
+            #nop echo { -- $sj_content -- };
+        };
+
+        #action {上一页(pageup)/下一页(pagedown)%s诵经(chanting)} {
+            #delay (chant) {
+                #echo {诵读开始: $sj_content };
+                chanting $sj_start_page $sj_content;
+                #var sj_content {};
+            } {5};
+        };
+
+        #action {你诵唱完了整段经书} {
+            newbie.sj.return;
+            newbie.q.success;
+            #class newbie_wd.sj.check kill;
+        };
+
+        #var sj_start_page 0;
+        #IF {"$sj_book" == "庄子·外篇「上卷」"} {
+            #IF {"$sj_article" == "庄子·外篇·骈拇"} {#math sj_start_page $sj_page+0};
+            #ELSEIF {"$sj_article" == "庄子·外篇·马蹄"} {#math sj_start_page $sj_page+3};
+            #ELSEIF {"$sj_article" == "庄子·外篇·胠箧"} {#math sj_start_page $sj_page+11};
+            #ELSEIF {"$sj_article" == "庄子·外篇·在宥"} {#math sj_start_page $sj_page+30};
+            #ELSEIF {"$sj_article" == "庄子·外篇·天地"} {#math sj_start_page $sj_page+65};
+            #ELSEIF {"$sj_article" == "庄子·外篇·天道"} {#math sj_start_page $sj_page+115};
+            #ELSEIF {"$sj_article" == "庄子·外篇·天运"} {#math sj_start_page $sj_page+150};
+            #ELSEIF {"$sj_article" == "庄子·外篇·刻意"} {#math sj_start_page $sj_page+189};
+            #ELSEIF {"$sj_article" == "庄子·外篇·缮性"} {#math sj_start_page $sj_page+200};
+        };
+        #ELSEIF {"$sj_book" == "庄子·外篇「下卷」"} {
+            #IF {"$sj_article" == "庄子·外篇·秋水"} {#math sj_start_page $sj_page+0};
+            #ELSEIF {"$sj_article" == "庄子·外篇·至乐"} {#math sj_start_page $sj_page+50};
+            #ELSEIF {"$sj_article" == "庄子·外篇·达生"} {#math sj_start_page $sj_page+68};
+            #ELSEIF {"$sj_article" == "庄子·外篇·山木"} {#math sj_start_page $sj_page+106};
+            #ELSEIF {"$sj_article" == "庄子·外篇·田子方"} {#math sj_start_page $sj_page+142};
+            #ELSEIF {"$sj_article" == "庄子·外篇·知北游"} {#math sj_start_page $sj_page+176};
+        };
+        #ELSEIF {"$sj_book" == "庄子·内篇「上卷」"} {
+            #IF {"$sj_article" == "庄子·内篇·逍遥游"} {#math sj_start_page $sj_page+0};
+            #ELSEIF {"$sj_article" == "庄子·内篇·齐物论"} {#math sj_start_page $sj_page+20};
+            #ELSEIF {"$sj_article" == "庄子·内篇·养生主"} {#math sj_start_page $sj_page+68};
+        };
+        #ELSEIF {"$sj_book" == "庄子·内篇「下卷」"} {
+            #IF {"$sj_article" == "庄子·内篇·人间世"} {#math sj_start_page $sj_page+0};
+            #ELSEIF {"$sj_article" == "庄子·内篇·德充符"} {#math sj_start_page $sj_page+45};
+            #ELSEIF {"$sj_article" == "庄子·内篇·大宗师"} {#math sj_start_page $sj_page+76};
+            #ELSEIF {"$sj_article" == "庄子·内篇·应帝王"} {#math sj_start_page $sj_page+123};
+        };
+        #ELSEIF {"$sj_book" == "庄子·杂篇「上卷」"} {
+            #IF {"$sj_article" == "庄子·杂篇·庚桑楚"} {#math sj_start_page $sj_page+0};
+            #ELSEIF {"$sj_article" == "庄子·杂篇·徐无鬼"} {#math sj_start_page $sj_page+41};
+            #ELSEIF {"$sj_article" == "庄子·杂篇·则阳"} {#math sj_start_page $sj_page+97};
+            #ELSEIF {"$sj_article" == "庄子·杂篇·外物"} {#math sj_start_page $sj_page+140};
+            #ELSEIF {"$sj_article" == "庄子·杂篇·寓言"} {#math sj_start_page $sj_page+167};
+        };
+        #ELSEIF {"$sj_book" == "庄子·杂篇「下卷」"} {
+            #IF {"$sj_article" == "庄子·杂篇·让王"} {#math sj_start_page $sj_page+0};
+            #ELSEIF {"$sj_article" == "庄子·杂篇·盗跖"} {#math sj_start_page $sj_page+46};
+            #ELSEIF {"$sj_article" == "庄子·杂篇·说剑"} {#math sj_start_page $sj_page+98};
+            #ELSEIF {"$sj_article" == "庄子·杂篇·渔父"} {#math sj_start_page $sj_page+1113};
+            #ELSEIF {"$sj_article" == "庄子·杂篇·列御寇"} {#math sj_start_page $sj_page+138};
+            #ELSEIF {"$sj_article" == "庄子·杂篇·天下"} {#math sj_start_page $sj_page+164};
+        };
+        #ELSEIF {"$sj_book" == "道德经「上卷」"} {
+            #IF {$sj_page <= 15} {#var sj_start_page $sj_page};
+            #ELSEIF {$sj_page >=16 && $sj_page <= 20} {#math sj_start_page $sj_page+1};
+            #ELSE {#math sj_start_page $sj_page+2};
+            #var sj_start_page $sj_page;
+        };
+        #ELSEIF {"$sj_book" == "道德经「下卷」"} {
+            #math sj_start_page $sj_page-40;
+        };
+        #ELSEIF {"$sj_book" == "道德经「上卷」"} {
+            #var sj_start_page $sj_page;
+        };
+
+        #var sj_content {};
+        page $sj_start_page;
+        #class newbie_wd.sj.check close;
+    };
+
+    #alias {newbie.sj} {
         #var sj_address %0;
         #var sj_book %1;
         
-        gt 三清殿;
-        ask song yuanqiao about 下山;
+        n;
+        ask song about 下山;
         gt 复真观二层;
-        jie ${sj_book};
-        gt ${sj_address};
-        l jing;
+        on_there {
+            jie ${sj_book};
+            gt ${sj_address};
+            on_there {
+                newbie.sj.check;
+            };
+        };
     };
 
     #action {你向冲虚道长打听有关} {
-        #class waitquest open;
+        #class newbie_wd.waitquest open;
         #action {道兄还有任务在身} {
             #if {"$task_running" == "1"} {
-                #echo "task is running........";
+                #echo {task is running........};
                 #return;
             }
             ask chongxu about cancel;
@@ -41,99 +160,102 @@
         };
         #action {现在还没有新的工作可以分配给你} {
             #if {"$task_running" == "1"} {
-                #echo "task is running........";
+                #echo {task is running........};
                 #return;
             }
             #delay {10} {
-                #class waitquest kill;
-                #nop newbie.start;
+                #class newbie_wd.waitquest kill;
+                #var task_running 0;
+                newbie.start;
             };
         };
         #action {冲虚道长说道：「今天全派弟子要在%*熟读典籍，据说要诵唱%*的%*(%*)} {
             #if {"$task_running" == "1"} {
-                #echo "task is running........";
+                #echo {task is running........};
                 #return;
             }
             #var task_running 1;
             #class wd_songjing_a open;
-                #var sj_address %%%%1;
-                #var sj_book %%%%2;
-                #var sj_article %%%%3;
-                #var sj_page %%%%4;
+                #var sj_address %%%1;
+                #var sj_book %%%2;
+                #var sj_article %%%3;
+                #var sj_page %%%4;
+                #nop echo {-- $sj_address $sj_book $sj_article $sj_page --};
                 show_to_quest 诵经: ${sj_address}/${sj_book}/${sj_article}/${sj_page};
-                newbie.songjing ${sj_address} ${sj_book};
+                newbie.sj ${sj_address} ${sj_book};
             #class wd_songjing_a close;
             #var task_running 0;
         };
         #action {冲虚道长说道：「今天全派弟子要在%*熟读典籍，据说要诵唱%*的第%*十%*章} { #nop ];
             #if {"$task_running" == "1"} {
-                #echo "task is running........";
+                #echo {task is running........};
                 #return;
             }
             #var task_running 1;
             #class wd_songjing_b open;
-                #var sj_address %%%%1;
-                #var sj_book %%%%2;
-                #var sj_article %%%%3;
+                #var sj_address %%%1;
+                #var sj_book %%%2;
+                #var sj_article %%%3;
+                #var sj_chapter %%%4;
 
                 #var sj_page 0;
-                #IF {"%3" == "一"} {#var sj_page 10};
-                #ELSEIF {"%3" == "二"} {#var sj_page 20};
-                #ELSEIF {"%3" == "三"} {#var sj_page 30};
-                #ELSEIF {"%3" == "四"} {#var sj_page 40};
-                #ELSEIF {"%3" == "五"} {#var sj_page 50};
-                #ELSEIF {"%3" == "六"} {#var sj_page 60};
-                #ELSEIF {"%3" == "七"} {#var sj_page 70};
-                #ELSEIF {"%3" == "八"} {#var sj_page 80};
-                #ELSEIF {"%3" == "九"} {#var sj_page 90};
+                #IF {"$sj_article" == "一"} {#var sj_page 10};
+                #ELSEIF {"$sj_article" == "二"} {#var sj_page 20};
+                #ELSEIF {"$sj_article" == "三"} {#var sj_page 30};
+                #ELSEIF {"$sj_article" == "四"} {#var sj_page 40};
+                #ELSEIF {"$sj_article" == "五"} {#var sj_page 50};
+                #ELSEIF {"$sj_article" == "六"} {#var sj_page 60};
+                #ELSEIF {"$sj_article" == "七"} {#var sj_page 70};
+                #ELSEIF {"$sj_article" == "八"} {#var sj_page 80};
+                #ELSEIF {"$sj_article" == "九"} {#var sj_page 90};
 
-                #IF {"%4" == "一"} {#math sj_page $sj_page+1};
-                #ELSEIF {"%4" == "二"} {#math sj_page $sj_page+2};
-                #ELSEIF {"%4" == "三"} {#math sj_page $sj_page+3};
-                #ELSEIF {"%4" == "四"} {#math sj_page $sj_page+4};
-                #ELSEIF {"%4" == "五"} {#math sj_page $sj_page+5};
-                #ELSEIF {"%4" == "六"} {#math sj_page $sj_page+6};
-                #ELSEIF {"%4" == "七"} {#math sj_page $sj_page+7};
-                #ELSEIF {"%4" == "八"} {#math sj_page $sj_page+8};
-                #ELSEIF {"%4" == "九"} {#math sj_page $sj_page+9};
+                #IF {"$sj_chapter" == "一"} {#math sj_page $sj_page+1};
+                #ELSEIF {"$sj_chapter" == "二"} {#math sj_page $sj_page+2};
+                #ELSEIF {"$sj_chapter" == "三"} {#math sj_page $sj_page+3};
+                #ELSEIF {"$sj_chapter" == "四"} {#math sj_page $sj_page+4};
+                #ELSEIF {"$sj_chapter" == "五"} {#math sj_page $sj_page+5};
+                #ELSEIF {"$sj_chapter" == "六"} {#math sj_page $sj_page+6};
+                #ELSEIF {"$sj_chapter" == "七"} {#math sj_page $sj_page+7};
+                #ELSEIF {"$sj_chapter" == "八"} {#math sj_page $sj_page+8};
+                #ELSEIF {"$sj_chapter" == "九"} {#math sj_page $sj_page+9};
 
                 show_to_quest 诵经: ${sj_address}/${sj_book}/${sj_article}/${sj_page};
-                newbie.songjing ${sj_address} ${sj_book};
+                newbie.sj ${sj_address} ${sj_book};
             #class wd_songjing_b close;
             #var task_running 0;
         };
         #action {冲虚道长说道：「今天全派弟子要在%*熟读典籍，据说要诵唱%*的第%*章} { #nop ];
             #if {"$task_running" == "1"} {
-                #echo "task is running........";
+                #echo {task is running........};
                 #return;
             }
             #var task_running 1;
             #class wd_songjing_c open;
-                #var sj_address %%%%1;
-                #var sj_book %%%%2;
-                #var sj_article %%%%4;
+                #var sj_address %%%1;
+                #var sj_book %%%2;
+                #var sj_article %%%3;
 
                 #var sj_page 0;
-                #IF {"%3" == "一"} {#var sj_page 1};
-                #ELSEIF {"%3" == "二"} {#var sj_page 2};
-                #ELSEIF {"%3" == "三"} {#var sj_page 3};
-                #ELSEIF {"%3" == "四"} {#var sj_page 4};
-                #ELSEIF {"%3" == "五"} {#var sj_page 5};
-                #ELSEIF {"%3" == "六"} {#var sj_page 6};
-                #ELSEIF {"%3" == "七"} {#var sj_page 7};
-                #ELSEIF {"%3" == "八"} {#var sj_page 8};
-                #ELSEIF {"%3" == "九"} {#var sj_page 9};
-                #ELSEIF {"%3" == "十"} {#var sj_page 10};
+                #IF {"$sj_article" == "一"} {#var sj_page 1};
+                #ELSEIF {"$sj_article" == "二"} {#var sj_page 2};
+                #ELSEIF {"$sj_article" == "三"} {#var sj_page 3};
+                #ELSEIF {"$sj_article" == "四"} {#var sj_page 4};
+                #ELSEIF {"$sj_article" == "五"} {#var sj_page 5};
+                #ELSEIF {"$sj_article" == "六"} {#var sj_page 6};
+                #ELSEIF {"$sj_article" == "七"} {#var sj_page 7};
+                #ELSEIF {"$sj_article" == "八"} {#var sj_page 8};
+                #ELSEIF {"$sj_article" == "九"} {#var sj_page 9};
+                #ELSEIF {"$sj_article" == "十"} {#var sj_page 10};
 
-                show_to_quest 诵经: ${sj_address}/${sj_book}/${sj_article}/${sj_page};
-                newbie.songjing ${sj_address} ${sj_book};
+                show_to_quest 诵经: ${sj_address}/${sj_book}/第${sj_article}章/${sj_page};
+                newbie.sj ${sj_address} ${sj_book};
             #class wd_songjing_c close;
             #var task_running 0;
         };
 
         #action {你到俞岱岩那里帮他看看炉火吧} {
             #if {"$task_running" == "1"} {
-                #echo "task is running........";
+                #echo {task is running........};
                 #return;
             }
             #var task_running 1;
@@ -154,7 +276,7 @@
                     ask chongxu about cancel;
                     #var task_running 0;
                     #class wd_liandan kill;
-                    #class waitquest kill;
+                    #class newbie_wd.waitquest kill;
                     #nop newbie.start;
                 };
             };
@@ -167,9 +289,9 @@
                 on_there {
                     show_to_quest 炼丹任务成功;
                     ask chongxu about success;
-                    #cast 0 $task_running;
+                    #var task_running 0;
                     #class wd_liandan kill;
-                    #class waitquest kill;
+                    #class newbie_wd.waitquest kill;
                     #nop newbie.start;
                 };
             };
@@ -187,11 +309,10 @@
 
         #action {旁边小校场上有教习教大家怎么行走五行阵} {
             #if {"$task_running" == "1"} {
-                #echo {"task is running........"};
+                #echo {task is running........};
                 #return;
             }
             #var task_running 1;
-            #echo {"$task_running"};
             #class wd_zhenfa open;
                 #var myloc 空;
                 #var myvar 空;
@@ -284,7 +405,17 @@
             #class wd_zhenfa close;
         };
 
-        #class waitquest close;
+        #action {到天柱峰脚下采气（caiqi）一次后回来向我汇报心得体会} {
+            #if {"$task_running" == "1"} {
+                #echo {task is running........};
+                #return;
+            }
+            #var task_running 1;
+            show_to_quest 采气;                
+            n;n;n;n;n;n;
+        };
+
+        #class newbie_wd.waitquest close;
     };
 
     #class newbie_wd.inner close;
