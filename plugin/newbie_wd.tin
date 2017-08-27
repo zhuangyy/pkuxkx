@@ -110,7 +110,7 @@
             #IF {"$sj_article" == "×¯×Ó¡¤ÔÓÆª¡¤ÈÃÍõ"} {#math sj_start_page $sj_page+0};
             #ELSEIF {"$sj_article" == "×¯×Ó¡¤ÔÓÆª¡¤µÁõÅ"} {#math sj_start_page $sj_page+46};
             #ELSEIF {"$sj_article" == "×¯×Ó¡¤ÔÓÆª¡¤Ëµ½£"} {#math sj_start_page $sj_page+98};
-            #ELSEIF {"$sj_article" == "×¯×Ó¡¤ÔÓÆª¡¤Óæ¸¸"} {#math sj_start_page $sj_page+1113};
+            #ELSEIF {"$sj_article" == "×¯×Ó¡¤ÔÓÆª¡¤Óæ¸¸"} {#math sj_start_page $sj_page+113};
             #ELSEIF {"$sj_article" == "×¯×Ó¡¤ÔÓÆª¡¤ÁĞÓù¿Ü"} {#math sj_start_page $sj_page+138};
             #ELSEIF {"$sj_article" == "×¯×Ó¡¤ÔÓÆª¡¤ÌìÏÂ"} {#math sj_start_page $sj_page+164};
         };
