@@ -1,0 +1,45 @@
+#class climbtree open;
+
+#alias {climbtree} {
+  #class climbtree.inner open;
+  
+  #alias {climbtree.start} {
+    gt yz;
+    on_there {
+      start_ticker;
+    };
+  };
+
+  #alias {start_ticker} {
+    #ticker {climbtree} {
+      climb tree;
+    } {1};
+  };
+
+  #alias {stop_ticker} {
+    #unticker {climbtree};
+  };
+
+  #action {你身子发虚，一头栽了下来，哎呀} {
+    stop_ticker;
+    gt 客店二楼;
+    on_there {
+      enter;
+      sleep;
+      on_wakeup {
+        climbtree.start;
+      };
+    };
+  };
+
+  show_to_quest 爬树;
+  climbtree.start;
+  #class climbtree.inner close;
+};
+
+#alias {climbtree.stop} {
+  #class climbtree.inner kill;
+  #unticker {climbtree};
+};
+
+#class climbtree close;
