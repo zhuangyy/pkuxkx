@@ -29,6 +29,7 @@
         #var wield_count %2;
     };
     #if {${wi_freezed} == 0} {
+		    #nop echo {x ${wield_type} ${wield_count} ${${wield_type}_list} ...};
         wield ${${wield_type}_list}[${wield_count}];
     };
 };
@@ -103,13 +104,19 @@
         #nop xuantie-jian, sword;
         #var weapon_type %%3;
         #var weapon_name %%2;
+				#if {"${weapon_type}" == "jian"} {
+					#var weapon_type sword;
+				};
+				#if {"${weapon_type}" == "dao"} {
+					#var weapon_type blade;
+				};
         #list ${weapon_type}_list size tmp_weapons_size;
         #math tmp_weapons_size ${tmp_weapons_size}+1;
         #if {${tmp_weapons_size} == 1} {
-            #list ${weapon_type}_list add ${weapon_type};
+            #list ${weapon_type}_list add ${weapon_name};
         };
         #else {
-            #list ${weapon_type}_list add {${weapon_type} ${tmp_weapons_size}};
+            #list ${weapon_type}_list add {${weapon_name} ${tmp_weapons_size}};
         };
     } {3};
     #action {%* = {[^,]+}} {
