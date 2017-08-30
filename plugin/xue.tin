@@ -2,9 +2,13 @@
 #tab xue.start;
 #tab xue.stop;
 
-#var xue_count 10;
+#var xue_count 1;
+#var xue_max   0;
+
 #alias {xue.start} {
     #class xue.inner open;
+    #var xue_current_level 0;
+
     #alias {xue.restart} {
         chifan;
         goto_shifu;
@@ -13,10 +17,41 @@
         };
     };
 
+    #alias {xue.checklevel} {
+        #class xue.checklevel.inner open;
+        #action {│%s%S%s│${xue_gongfu}%s│%S│%s%d│%*} {
+            #class xue.checklevel.inner kill;
+            #var xue_current_level %%%7;
+            show_to_info ${xue_gongfu}/${xue_current_level}/${xue_max};
+            #if {${xue_max} <= ${xue_current_level}} {
+                show_to_info 你的${xue_gongfu}已经满级了;
+                xue.stop;
+            };
+            #else {
+                xue.restart;
+            };
+        };
+
+        stop_ticker;
+        #if {${xue_max} > 0} {
+            #send {sk};
+            #delay {3} {
+            };
+        };
+        #else {
+            #class xue.checklevel.inner kill;
+            xue.restart;
+        };
+        #class xue.checklevel.inner close;
+    };
+
     #alias {start_ticker} {
         #ticker {xue} {
-            xue ${shifu} for ${xue_gongfu} ${xue_count};
-        } {0.5};
+            #nop xue ${shifu} for ${xue_gongfu} ${xue_count};
+            lian blade 1;
+            lian dodge 1;
+            lian sword 1;
+        } {3};
     };
 
     #alias {stop_ticker} {
@@ -25,6 +60,11 @@
 
     #action {你今天太累了} {
         yun regenerate;
+    };
+
+    #action {你的%*进步了} {
+        show_to_info %%1 进步了;
+        #nop xue.checklevel;
     };
 
     #action {你的内力不够} {
@@ -47,14 +87,10 @@
 
     autoheal.off;
     #var xue_gongfu %1;
-    #if {"${xue_gongfu}" == ""} {
-        #var xue_gongfu @getenv{xue_gongfu};
-    };
-    #else {
-        @setenv{xue_gongfu;${xue_gongfu}};
-    };
-    show_to_quest 学习: ${shifu}/${xue_gongfu};
-    xue.restart;
+    #var xue_count %2;
+    show_to_quest 学习: ${shifu}/${xue_gongfu}/${xue_count};
+    xue.checklevel;
+    #nop xue.restart;
 };
 
 #alias {xue.stop} {
