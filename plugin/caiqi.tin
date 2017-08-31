@@ -1,0 +1,36 @@
+#class caiqi open;
+
+#alias {on_caiqi_finish} {
+    #alias tmp_caiqi_finish #cr;
+    #alias tmp_caiqi_finish %0;
+    #class on_caiqi_finish.inner open;
+
+    #action {{大脑一片空明，感觉一股热气在任督二脉盘旋|仅子午两个时辰能够进行采气|每天子午各采气一次就够了}} {
+        #class on_caiqi_finish.inner kill;
+        #delay {caiqi_finish} {
+          tmp_caiqi_finish;
+        } {3};
+    };
+    #class on_caiqi_finish.inner close;
+};
+
+#alias {caiqi.action} {
+    gt 三清殿;
+    on_there {
+        ask song about 下山;
+        gt 天柱峰下;
+        on_there {
+          caiqi;
+        };
+    };
+};
+
+#alias {cq} {
+    show_to_quest 采气;
+    caiqi.action;
+    on_caiqi_finish {
+        show_to_quest 采气结束; 
+    };
+};
+
+#class caiqi close;
