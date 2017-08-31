@@ -1,0 +1,102 @@
+#class lian open;
+#tab lian.start;
+#tab lian.stop;
+
+#var lian_count 1;
+
+#alias {lian.start} {
+    #class lian.inner open;
+
+    #alias {lian.restart} {
+        chifan;
+        goto_rest;
+        on_there {
+            start_ticker;
+        };
+    };
+
+    #alias {start_ticker} {
+        #ticker {lian} {
+            lian ${lian_gongfu} ${lian_count};
+        } {1};
+    };
+
+    #alias {stop_ticker} {
+        #unticker {lian};
+    };
+
+    #action {{你今天太累了|你的体力不够练}} {
+        yun recover;
+    };
+
+    #action {你的「%*」进步了} {
+        show_to_info %%1 进步了;
+    };
+
+    #action {{你的内力不够|你的真气不够|你现在气血虚浮|你现在内力不足}} {
+        stop_ticker;
+        #delay {lian_delay} {
+            sleep;
+            on_wakeup {
+              lian.restart;
+            };
+        } {3};
+    };
+
+    #action {{你需要提高基本功|没有办法学习这种技能|也许是缺乏实战经验|切磋}} {
+        lian.stop;
+        show_to_info 你的${lian_gongfu}满级了;
+				#showme 你的${lian_gongfu}满级了;
+    };
+    #class lian.inner close;
+
+    #var lian_gongfu %1;
+    #var lian_count %2;
+    autoheal.off;
+    show_to_quest 练习开始/${lian_gongfu}/${lian_count};
+    lian.restart;
+};
+
+#alias {lian.stop} {
+    #class lian.inner kill;
+    #unticker {lian};
+    show_to_quest 练习结束;
+    autoheal.on;
+};
+
+#alias {lian.full} {
+  #class lian.full.inner open;
+  #var lian.full.idx 1;
+	
+	#alias {lian.full.start} {
+  	#list gongfus get ${lian.full.idx} {gongfu};
+		lian.start ${gongfu} ${lian_count};
+	};
+
+	#action {满级了} {
+		#math lian.full.idx ${lian.full.idx} + 1;
+		#list gongfus size lian.full.maxsize;
+		#if {${lian.full.idx} > ${lian.full.maxsize}} {
+			lian.full.stop;
+		};
+    #else {
+			#delay {5} {
+				lian.full.start;
+			};
+    };
+  };
+	#list gongfus create {dodge;cuff;parry;blade;sword};
+
+  #var lian_count %1;
+  show_to_quest lian.full开始;
+	lian.full.start;
+  #class lian.full.inner close;
+};
+
+#alias {lian.full.stop} {
+  lian.stop;
+	#class lian.full.inner kill;
+  show_to_quest lian.full结束;
+};
+
+#class lian close;
