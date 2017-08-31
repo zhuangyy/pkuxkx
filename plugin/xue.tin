@@ -3,7 +3,7 @@
 #tab xue.stop;
 
 #var xue_count 1;
-#var xue_max   0;
+#var xue_max   52;
 
 #alias {xue.start} {
     #class xue.inner open;
@@ -24,8 +24,9 @@
             #var xue_current_level %%%7;
             show_to_info ${xue_gongfu}/${xue_current_level}/${xue_max};
             #if {${xue_max} <= ${xue_current_level}} {
-                show_to_info 你的${xue_gongfu}已经满级了;
                 xue.stop;
+                show_to_info 你的${xue_gongfu}已经满级了;
+								#showme 你的${xue_gongfu}已经满级了;
             };
             #else {
                 xue.restart;
@@ -47,6 +48,7 @@
 
     #alias {start_ticker} {
         #ticker {xue} {
+				    #nop echo {xue ${shifu} for ${xue_gongfu} ${xue_count}};
             xue ${shifu} for ${xue_gongfu} ${xue_count};
         } {1};
     };
@@ -61,7 +63,7 @@
 
     #action {你的%*进步了} {
         show_to_info %%1 进步了;
-        #nop xue.checklevel;
+        xue.checklevel;
     };
 
     #action {你的内力不够} {
@@ -96,4 +98,40 @@
     show_to_quest 学习结束;
     autoheal.on;
 };
+
+#alias {xue.full} {
+  #class xue.full.inner open;
+  #var xue.full.idx 1;
+	
+	#alias {xue.full.start} {
+  	#list gongfus get ${xue.full.idx} {gongfu};
+		xue.start ${gongfu} ${xue_count};
+	};
+
+	#action {满级了} {
+		#math xue.full.idx ${xue.full.idx} + 1;
+		#list gongfus size xue.full.maxsize;
+		#if {${xue.full.idx} > ${xue.full.maxsize}} {
+			xue.full.stop;
+		};
+    #else {
+			#delay {5} {
+						xue.full.start;
+			};
+    };
+  };
+	#list gongfus create {dodge;force;cuff;parry};
+
+  #var xue_count %1;
+  show_to_quest 全面学习开始;
+	xue.full.start;
+  #class xue.full.inner close;
+};
+
+#alias {xue.full.stop} {
+  xue.stop;
+	#class xue.full.inner kill;
+  show_to_quest 全面学习结束;
+};
+
 #class xue close;
