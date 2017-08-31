@@ -70,7 +70,11 @@
 #read plugin/task.tin;
 #read plugin/fullskill.tin
 #read plugin/xmpp.tin;
-#read plugin/peiyao.tin;
+
+#nop read plugin/peiyao.tin;
+#nop read plugin/climbtree.tin;
+#read plugin/caiqi.tin;
+#read plugin/lian.tin;
 
 #read plugin/os/linux.tin;
 #if {"${os_name}" == ""} {
