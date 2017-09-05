@@ -1,0 +1,65 @@
+#class murong.job open;
+
+#alias {mrjob.ask} {
+  #class mrjob.ask.inner open;
+
+  #action {慕容世家家贼死了} {
+    #delay {5} {
+      #class mrjob.ask.inner kill;
+      mrjob.success;
+    };
+  };
+
+  #action {家贼难防，有人偷走了少爷的信件，据传曾在『%*』附近出现} {
+    show_to_quest 慕容任务 %%1;
+    gt %%1;
+  };
+
+  #action {Orrta's murong jiazei} {
+    wi;
+    wi.freeze;
+    kill jiazei;
+  };
+
+  gt 苏州茶馆;
+  on_there {
+    ask pu ren about job;
+  };
+
+  #class mrjob.ask.inner close;
+};
+
+#alias {mrjob.success} {
+  #class mrjob.success.inner open;
+
+  #action {仆人忙着呢，等会吧} {
+    #delay {2} {
+      give letter to pu ren;
+    };
+  };
+
+  #action {仆人看着你会心地一笑} {
+    show_to_quest 慕容任务成功;
+  };
+
+  get all from corpse;
+  get all;
+  gt 苏州茶馆;
+  on_there {
+    give letter to pu ren;
+  };
+
+  #class mrjob.success.inner close;
+};
+
+#alias {mrjob.rest} {
+  gt 南昌休息室;
+  on_there {
+    sleep;
+  };
+  on_wakeup {
+    dazuo 400;
+  };
+};
+
+#class murong.job close;
