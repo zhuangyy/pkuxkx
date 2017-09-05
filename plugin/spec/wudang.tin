@@ -5,6 +5,48 @@
     yun powerup;
 };
 
+#alias {attack.xf.combined} {
+	#var jiali_count max;
+	pfm wuying;
+	pfm gangrou;
+	#if {${mj_started} != 1} {
+	    pfm lzj;
+	};
+	#class attack.inner open;
+	#if {${mj_started} == 1} {
+		#ticker {wuying} {
+			pfm wuying;
+		} {5.8};
+	};
+	#else {
+		#ticker {wuying} {
+			pfm wuying;
+		} {2.8};
+		#ticker {lzj} {
+			pfm lzj;
+		} {3.8};
+	};
+	#ticker {gr} {
+		pfm gangrou;
+	} {4.8};
+	#class attack.inner close;
+};
+
+#alias {attack.xf} {
+	pfm wuying;
+	#class attack.inner open;
+	#ticker {wuying} {
+			pfm wuying;
+	} {2.8};
+	#class attack.inner close;
+};
+
+#alias {attack.auto} {
+	#ticker {lzj} {
+		pfm lzj;
+	} {2.8};
+};
+
 #alias {attack} {
     pfm chan;
     pfm zong;
@@ -14,96 +56,19 @@
         pfm chan;
     } {1};
     #class attack.inner close;
-
-    #if {"${quest}" == "hb"} {
-        #class attack.inner open;
-        #class attack.inner close;
+		
+    #if {${xf.type} == 2 || ${xf.type == 4}} {
+        #var jiali_count max;
+        attack.xf;
     };
-    #elseif {${mj_started}  == 1} {
-        #if {${xf.type} == -1 || ${xf.type} == 1} {
-            #var jiali_count max;
-            pfm wuying;
-            pfm gangrou;
-            #class attack.inner open;
-            #ticker {wuying} {
-                pfm wuying;
-            } {5.8};
-            #ticker {gr} {
-                pfm gangrou;
-            } {4.8};
-            #class attack.inner close;
-        };
-        #elseif {${xf.type} == 2} {
-            #var jiali_count max;
-            pfm wuying;
-            #class attack.inner open;
-            #ticker {wuying} {
-                pfm wuying;
-            } {2.8};
-            #class attack.inner close;
-        };
-        #elseif {${xf.type} == 3} {
-            pfm wuying;
-            #class attack.inner open;
-            #ticker {wuying} {
-                pfm wuying;
-            } {2.8};
-            #class attack.inner close;
-        };
-        #elseif {${xf.type} == 4} {
-            #var jiali_count max;
-            pfm wuying;
-            #class attack.inner open;
-            #ticker {wuying} {
-                pfm wuying;
-            } {2.8};
-            #class attack.inner close;
-        };
+    #elseif {${xf.type} == 3} {
+        attack.xf;
+    };
+    #elseif {${xf.type} == 1} {
+        attack.xf.combined;
     };
     #else {
-        #if {${xf.type} == -1 || ${xf.type} == 1} {
-            #var jiali_count max;
-            pfm wuying;
-            pfm gangrou;
-            pfm lzj;
-            #class attack.inner open;
-            #ticker {wuying} {
-                pfm wuying;
-            } {2.8};
-            #ticker {lzj} {
-                pfm lzj;
-            } {3.8};
-            #ticker {gr} {
-                pfm gangrou;
-            } {4.8};
-            #class attack.inner close;
-        };
-        #elseif {${xf.type} == 2} {
-            #var jiali_count max;
-            pfm wuying;
-            #class attack.inner open;
-            #ticker {wuying} {
-                pfm wuying;
-            } {2.8};
-            #class attack.inner close;
-        };
-        #elseif {${xf.type} == 3} {
-            pfm wuying;
-            #class attack.inner open;
-            #ticker {wuying} {
-                pfm wuying;
-            } {2.8};
-            #class attack.inner close;
-        };
-        #elseif {${xf.type} == 4} {
-            #var jiali_count max;
-            pfm wuying;
-            #class attack.inner open;
-            #ticker {wuying} {
-                pfm wuying;
-            } {2.8};
-            #class attack.inner close;
-        };
+        attack.auto;
     };
 };
 
@@ -125,7 +90,7 @@
 };
 
 #alias {chan} {
-    unwield all;
+    unwi;
     do_wield sword;
     perform taiji-jian.chan;
     #send {perform taiji-jian.chan};
@@ -134,7 +99,7 @@
 };
 
 #alias {sanhuan} {
-    unwield all;
+    unwi;
     do_wield sword;
     jiali ${jiali_count};
     perform taiji-jian.sanhuan;
@@ -151,7 +116,7 @@
 };
 
 #alias {zong} {
-    #send {perform tiyunzong.zong};
+    #nop send {perform tiyunzong.zong};
 };
 
 #alias {lzj} {
@@ -173,7 +138,7 @@
 };
 
 #alias {wuying} {
-    unwield all;
+    unwi;
     jiali ${jiali_count};
     perform claw.wuying;
     #if {${gangrou_ing} == 0} {
@@ -214,12 +179,17 @@
 };
 
 #alias {goto_shifu} {
-    gt {武当山小屋};
+    #nop gt {武当山小屋};
+	gt {前院};
 };
 
-#list my_weapons_to_wield create {spear;spear 2;};
+#alias {goto_mz} {
+    gt {武当后堂};
+};
 
-#var shifu zhang;
+#list my_weapons_to_wield create {sword;blade;};
+
+#var shifu yu;
 
 #alias {reborn} {
     #send {jifa cuff taiji-quan};
@@ -229,7 +199,7 @@
     #send {jifa blade xuanxu-dao};
     #send {jifa claw taiji-zhao};
     #nop #send {jifa force taiji-shengong};
-    #send {jifa spear yuejia-qiangfa};
+    #nop send {jifa spear yuejia-qiangfa};
     bei cuff claw;
 };
 
@@ -237,7 +207,7 @@ stat.register 缠 miss 只听得「铮」一声清响，剧烈碰撞之下你剑诀为敌所破，无以为继
 stat.register 缠 hit 只能见招拆招，疲于应对，不觉已深陷太极剑意之中，无法出招。;
 
 #var menzhong zhang;
-#var menzhong_didian ht;
+#var menzhong_didian 武当后堂;
 
 #alias {attack.end} {
     #var jiali_count 50;
