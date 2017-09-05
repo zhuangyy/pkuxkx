@@ -3,14 +3,10 @@
 #alias {pd.start} {
     set_last_quest pd;
     #class pd.inner open;
-    #ticker {pingdiao} {
-        pingdiao;
-    } {300};
     #action {你凭吊完毕,站起身来} {
-        #delay {1} {
-            #delay {2} {
-                pingdiao;
-            };
+        #delay {5} {
+            chifan;
+            pingdiao;
         };
     };
     #class pd.inner open;
