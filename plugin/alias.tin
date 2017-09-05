@@ -17,7 +17,13 @@
 };
 
 #alias {chifan} {
-    #6 {drink cha};
+    #nop #6 {drink cha};
+    #if {$water < 100} {
+        #10 {drink tang};
+    };
+    #if {$food < 100} {
+        #5 {eat gan liang};
+    };
 };
 
 #alias {lm} {
@@ -901,7 +907,7 @@ walk_to east;
 };
 
 #alias {quit_and_restart} {
-    #class quit.inner.open;
+    #class quit.inner open;
     #action {Äã¶ªÏÂ} {
         #class quit.inner kill;
         #end;
@@ -909,7 +915,7 @@ walk_to east;
     #ticker {quit} {
         #send {quit};
     } {3};
-    #class quit.inner.close;
+    #class quit.inner close;
     #send {quit};
 };
 
@@ -1303,3 +1309,32 @@ walk_to east;
     @clearenv{hb_lunci};
     @clearenv{hb_lunci_total};
 };
+
+#alias {newbie.suit} {
+  gt ·¢´ôÊÒ;
+  on_there {
+    remove all;
+    drop cloth;
+    draw sword;
+    draw blade;
+    draw armor;
+    draw head;
+    draw cloth;
+    draw surcoat;
+    draw boots;
+    wear all;
+    wield qingfeng sword;
+    wield dakan dao;
+	ss;
+  };
+};
+
+#alias {newbie.food} {
+  gt ×íÏÉÂ¥;
+  on_there {
+      buy gan liang 4;
+      up;
+      buy suanmei tang 10;
+  };
+};
+

@@ -1,25 +1,41 @@
 #class canju open
+
 #alias {canju.start} {
     #class canju.inner open;
-    #ticker {watch} {
-        watch canju;
-    } {3};
+
+    #alias {canju.restart} {
+        #ticker {canju.watch} {
+            chifan;
+            watch canju;
+        } {2};
+    };
+
     #action {你精力不够} {
         yun jing;
     };
+    
     #action {内力不够} {
         dazuo 100;
     };
+
     #action {发现残局对你太浅了} {
         canju.stop;
     };
+
+    #action {你的「%*」进步了} {
+        show_to_info %%1 进步了;
+    };
+
     #class canju.inner close;
+
     autoheal.off;
-    watch canju;
+    canju.restart;
 };
 
 #alias {canju.stop} {
+    #untick canju.watch;
     #class canju.inner kill;
-    autoheal.off;
+    autoheal.on;
 };
+
 #class canju close
