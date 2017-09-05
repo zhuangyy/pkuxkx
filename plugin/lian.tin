@@ -2,22 +2,55 @@
 #tab lian.start;
 #tab lian.stop;
 
-#var lian_count 1;
+#var lian_caiqi_done 0;
+#var lian_count 5;
 
 #alias {lian.start} {
     #class lian.inner open;
+
+    #alias {lian.action} {
+        lian ${lian_gongfu} ${lian_count};
+    };
 
     #alias {lian.restart} {
         chifan;
         goto_rest;
         on_there {
+            unwield all;
+            #if {"${lian_gongfu}" == "sword"} {
+                wield sword;
+            };
+            #elseif {"${lian_gongfu}" == "blade"} {
+                wield blade;
+                wield dao;
+            };
+            show_to_quest 练习: ${lian_gongfu}/${lian_count};
             start_ticker;
         };
     };
 
     #alias {start_ticker} {
         #ticker {lian} {
-            lian ${lian_gongfu} ${lian_count};
+            #if {"${curr_daytime}" == "正午" ||
+                 "${curr_daytime}" == "午夜"} {
+                #if {"${lian_caiqi_done}" == "0"} {
+                    show_to_quest 练习: ${lian_gongfu}/${lian_count}/采气;
+                    show_to_info 采气;
+                    stop_ticker;
+                    caiqi.action;
+                    on_caiqi_finish {
+                        #var lian_caiqi_done 1;
+                        lian.restart;
+                    };
+                };
+                #else {
+                    lian.action;
+                };
+            };
+            #else {
+                #var lian_caiqi_done 0;
+                lian.action;
+            };
         } {1};
     };
 
@@ -25,7 +58,7 @@
         #unticker {lian};
     };
 
-    #action {{你今天太累了|你的体力不够练}} {
+    #action {{你今天太累了|你的体力不够练|你现在气血虚浮|你的体力太低了}} {
         yun recover;
     };
 
@@ -33,12 +66,13 @@
         show_to_info %%1 进步了;
     };
 
-    #action {{你的内力不够|你的真气不够|你现在气血虚浮|你现在内力不足}} {
+    #action {{你的内力不够|你的真气不够|你现在内力不足}} {
         stop_ticker;
+        show_to_quest 练习: ${lian_gongfu}/${lian_count}/睡觉;
         #delay {lian_delay} {
             sleep;
             on_wakeup {
-              lian.restart;
+                lian.restart;
             };
         } {3};
     };
@@ -46,14 +80,15 @@
     #action {{你需要提高基本功|没有办法学习这种技能|也许是缺乏实战经验|切磋}} {
         lian.stop;
         show_to_info 你的${lian_gongfu}满级了;
-				#showme 你的${lian_gongfu}满级了;
+		#showme 你的${lian_gongfu}满级了;
     };
+
     #class lian.inner close;
 
     #var lian_gongfu %1;
     #var lian_count %2;
     autoheal.off;
-    show_to_quest 练习开始/${lian_gongfu}/${lian_count};
+    show_to_quest 练习: ${lian_gongfu}/${lian_count};
     lian.restart;
 };
 
@@ -65,11 +100,11 @@
 };
 
 #alias {lian.full} {
-  #class lian.full.inner open;
-  #var lian.full.idx 1;
+    #class lian.full.inner open;
+    #var lian.full.idx 1;
 	
 	#alias {lian.full.start} {
-  	#list gongfus get ${lian.full.idx} {gongfu};
+  	    #list gongfus get ${lian.full.idx} gongfu;
 		lian.start ${gongfu} ${lian_count};
 	};
 
@@ -79,24 +114,25 @@
 		#if {${lian.full.idx} > ${lian.full.maxsize}} {
 			lian.full.stop;
 		};
-    #else {
-			#delay {5} {
-				lian.full.start;
-			};
+        #else {
+            #delay {5} {
+                lian.full.start;
+            };
+        };
     };
-  };
-	#list gongfus create {dodge;cuff;parry;blade;sword};
-
-  #var lian_count %1;
-  show_to_quest lian.full开始;
-	lian.full.start;
-  #class lian.full.inner close;
+  
+    #list gongfus create {dodge;cuff;parry;blade;sword};
+    #nop list gongfus create {blade;sword};
+    #var lian_count %1;
+    show_to_quest lian.full开始;
+    lian.full.start;
+    #class lian.full.inner close;
 };
 
 #alias {lian.full.stop} {
-  lian.stop;
+    lian.stop;
 	#class lian.full.inner kill;
-  show_to_quest lian.full结束;
+    show_to_quest lian.full结束;
 };
 
 #class lian close;

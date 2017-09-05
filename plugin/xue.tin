@@ -1,9 +1,28 @@
+#nop 用法:
+#nop 学单个武功: xue.start <武功名称> <使用点数>
+#nop 停止学习: xue.stop
+#nop 例如: xue.start force 10
+#nop 设置学习武功的级别上限(到达指定上限后, xue会停止): xue.max <武功级别>
+#nop 例如: xue.max 55
+#nop 只输入 xue.max 会echo当前设置的上限. xue.max 0 取消上限.
+#nop 批量学习: xue.full <使用点数>
+#nop 例如: xue.full 10
+#nop 停止批量学习: xue.full.stop
+
+
 #class xue open;
 #tab xue.start;
 #tab xue.stop;
 
-#var xue_count 1;
-#var xue_max   52;
+#var xue_count 10;
+#var xue_max   0;
+
+#alias {xue.max} {
+    #if {"%1" != "" && %1 >= 0} {
+        #var xue_max %1;
+    };
+    #echo {最高等级 -> ${xue_max}};
+};
 
 #alias {xue.start} {
     #class xue.inner open;
@@ -23,10 +42,10 @@
             #class xue.checklevel.inner kill;
             #var xue_current_level %%%7;
             show_to_info ${xue_gongfu}/${xue_current_level}/${xue_max};
-            #if {${xue_max} <= ${xue_current_level}} {
+            #if {${xue_max} > 0 && ${xue_max} <= ${xue_current_level}} {
                 xue.stop;
                 show_to_info 你的${xue_gongfu}已经满级了;
-								#showme 你的${xue_gongfu}已经满级了;
+                #showme 你的${xue_gongfu}已经满级了;
             };
             #else {
                 xue.restart;
@@ -48,7 +67,7 @@
 
     #alias {start_ticker} {
         #ticker {xue} {
-				    #nop echo {xue ${shifu} for ${xue_gongfu} ${xue_count}};
+            #nop echo {xue ${shifu} for ${xue_gongfu} ${xue_count}};
             xue ${shifu} for ${xue_gongfu} ${xue_count};
         } {1};
     };
@@ -102,35 +121,35 @@
 #alias {xue.full} {
   #class xue.full.inner open;
   #var xue.full.idx 1;
-	
-	#alias {xue.full.start} {
-  	#list gongfus get ${xue.full.idx} {gongfu};
-		xue.start ${gongfu} ${xue_count};
-	};
+    
+    #alias {xue.full.start} {
+        #list gongfus get ${xue.full.idx} {gongfu};
+        xue.start ${gongfu} ${xue_count};
+    };
 
-	#action {满级了} {
-		#math xue.full.idx ${xue.full.idx} + 1;
-		#list gongfus size xue.full.maxsize;
-		#if {${xue.full.idx} > ${xue.full.maxsize}} {
-			xue.full.stop;
-		};
+    #action {满级了} {
+        #math xue.full.idx ${xue.full.idx} + 1;
+        #list gongfus size xue.full.maxsize;
+        #if {${xue.full.idx} > ${xue.full.maxsize}} {
+            xue.full.stop;
+        };
     #else {
-			#delay {5} {
-						xue.full.start;
-			};
+        #delay {5} {
+            xue.full.start;
+        };
     };
   };
-	#list gongfus create {dodge;force;cuff;parry};
+  #list gongfus create {dodge;cuff};
 
   #var xue_count %1;
   show_to_quest 全面学习开始;
-	xue.full.start;
+  xue.full.start;
   #class xue.full.inner close;
 };
 
 #alias {xue.full.stop} {
   xue.stop;
-	#class xue.full.inner kill;
+  #class xue.full.inner kill;
   show_to_quest 全面学习结束;
 };
 
