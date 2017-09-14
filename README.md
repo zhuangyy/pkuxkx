@@ -22,3 +22,9 @@ Requirements
 2. sqlite3
 3. python3
 4. Optional: sleekxmpp (for xmpp notification)
+
+Notes
+----------
+1. 作为一个exp 100k的武当弟子, 目前所有的修改都是为了适应自己的成长, 请在采用的时候有所选择.
+
+
