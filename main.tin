@@ -15,8 +15,6 @@
 #read plugin/status.tin
 #read plugin/gps.tin
 #read plugin/env.tin;
-#nop read plugin/tuna.tin
-#nop read plugin/dazuo.tin
 #read plugin/war.tin
 #read plugin/yue.tin
 #read plugin/murong.tin
