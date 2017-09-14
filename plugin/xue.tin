@@ -43,9 +43,9 @@
             #var xue_current_level %%%7;
             show_to_info ${xue_gongfu}/${xue_current_level}/${xue_max};
             #if {${xue_max} > 0 && ${xue_max} <= ${xue_current_level}} {
+                show_to_info 学习:你的${xue_gongfu}满级了;
                 xue.stop;
-                show_to_info 你的${xue_gongfu}已经满级了;
-                #showme 你的${xue_gongfu}已经满级了;
+                #showme 学习:你的${xue_gongfu}满级了;
             };
             #else {
                 xue.restart;
@@ -98,9 +98,11 @@
         } {3};
     };
 
-    #action {{你的潜能已经发挥到极限了|没有办法学习这种技能|也许是缺乏实战经验|切磋}} {
+    #action {{你的潜能已经发挥到极限了|没有办法学习这种技能|也许是缺乏实战经验}} {
         xue.stop;
+        #showme 学习:你的${xue_gongfu}满级了;
     };
+
     #class xue.inner close;
 
     autoheal.off;
@@ -119,38 +121,41 @@
 };
 
 #alias {xue.full} {
-  #class xue.full.inner open;
-  #var xue.full.idx 1;
+    #class xue.full.inner open;
+    #var xue.full.idx 1;
     
     #alias {xue.full.start} {
         #list gongfus get ${xue.full.idx} {gongfu};
         xue.start ${gongfu} ${xue_count};
     };
 
-    #action {满级了} {
+    #action {学习:你的%*满级了} {
         #math xue.full.idx ${xue.full.idx} + 1;
         #list gongfus size xue.full.maxsize;
         #if {${xue.full.idx} > ${xue.full.maxsize}} {
             xue.full.stop;
         };
-    #else {
-        #delay {5} {
-            xue.full.start;
+        #else {
+            #delay {5} {
+                xue.full.start;
+            };
         };
     };
-  };
-  #list gongfus create {dodge;cuff};
+    #list gongfus create {taiji-shengong};
 
-  #var xue_count %1;
-  show_to_quest 全面学习开始;
-  xue.full.start;
-  #class xue.full.inner close;
+    #var xue_count %1;
+    show_to_quest 全面学习开始;
+    xue.full.start;
+    #showme 全面学习开始;
+
+    #class xue.full.inner close;
 };
 
 #alias {xue.full.stop} {
   xue.stop;
   #class xue.full.inner kill;
   show_to_quest 全面学习结束;
+  #showme 全面学习结束;
 };
 
 #class xue close;

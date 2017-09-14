@@ -1,16 +1,21 @@
+#nop 用法:
+#nop 练习单个武功: lian.start <武功名称> <使用点数>
+#nop   例如: lian.start force 10
+#nop 停止练习: lian.stop
+#nop 批量练习: lian.full <使用点数>
+#nop   例如: lian.full 10
+#nop 停止批量练习: lian.full.stop
+#nop ++注意++ 
+#nop lian.tin不设置等级上限, 练到无法练为止, 一般是对应基本功夫的等级.
+
 #class lian open;
 #tab lian.start;
 #tab lian.stop;
 
-#var lian_caiqi_done 0;
 #var lian_count 5;
 
 #alias {lian.start} {
     #class lian.inner open;
-
-    #alias {lian.action} {
-        lian ${lian_gongfu} ${lian_count};
-    };
 
     #alias {lian.restart} {
         chifan;
@@ -31,26 +36,7 @@
 
     #alias {start_ticker} {
         #ticker {lian} {
-            #if {"${curr_daytime}" == "正午" ||
-                 "${curr_daytime}" == "午夜"} {
-                #if {"${lian_caiqi_done}" == "0"} {
-                    show_to_quest 练习: ${lian_gongfu}/${lian_count}/采气;
-                    show_to_info 采气;
-                    stop_ticker;
-                    caiqi.action;
-                    on_caiqi_finish {
-                        #var lian_caiqi_done 1;
-                        lian.restart;
-                    };
-                };
-                #else {
-                    lian.action;
-                };
-            };
-            #else {
-                #var lian_caiqi_done 0;
-                lian.action;
-            };
+            lian ${lian_gongfu} ${lian_count};
         } {1};
     };
 
@@ -78,18 +64,18 @@
     };
 
     #action {{你需要提高基本功|没有办法学习这种技能|也许是缺乏实战经验|切磋}} {
+        show_to_info 练习:你的${lian_gongfu}满级了;
         lian.stop;
-        show_to_info 你的${lian_gongfu}满级了;
-		#showme 你的${lian_gongfu}满级了;
+		#showme 练习:你的${lian_gongfu}满级了;
     };
-
-    #class lian.inner close;
 
     #var lian_gongfu %1;
     #var lian_count %2;
     autoheal.off;
     show_to_quest 练习: ${lian_gongfu}/${lian_count};
     lian.restart;
+
+    #class lian.inner close;
 };
 
 #alias {lian.stop} {
@@ -108,7 +94,7 @@
 		lian.start ${gongfu} ${lian_count};
 	};
 
-	#action {满级了} {
+	#action {练习:你的%*满级了} {
 		#math lian.full.idx ${lian.full.idx} + 1;
 		#list gongfus size lian.full.maxsize;
 		#if {${lian.full.idx} > ${lian.full.maxsize}} {
@@ -121,10 +107,11 @@
         };
     };
   
-    #list gongfus create {dodge;cuff;parry;blade;sword};
+    #list gongfus create {dodge;cuff;parry;claw;blade;sword};
     #nop list gongfus create {blade;sword};
     #var lian_count %1;
-    show_to_quest lian.full开始;
+    show_to_quest 全面练习开始;
+    #showme 全面练习开始;
     lian.full.start;
     #class lian.full.inner close;
 };
@@ -132,7 +119,8 @@
 #alias {lian.full.stop} {
     lian.stop;
 	#class lian.full.inner kill;
-    show_to_quest lian.full结束;
+    show_to_quest 全面练习结束;
+    #showme 全面练习结束;
 };
 
 #class lian close;

@@ -1,236 +1,192 @@
-#class lingwu open
-#tab lw.start;
-#tab lw.stop;
+#nop 用法:
+#nop 领悟单个武功: lingwu.start <武功名称> <使用点数>
+#nop   例如: lingwu.start force 10
+#nop 停止领悟: lingwu.stop
+#nop 设置领悟武功的级别上限(到达指定上限后, lingwu会停止): lingwu.max <武功级别>
+#nop   例如: lingwu.max 55
+#nop 只输入 lingwu.max 会echo当前设置的上限. lingwu.max 0 取消上限.
+#nop 批量领悟: lingwu.full <使用点数>
+#nop   例如: lingwu.full 10
+#nop 停止批量领悟: lingwu.full.stop
+#nop ++注意++ 
+#nop lingwu.tin仅负责将基本功夫升级到指定级别, 不保证同时特殊功夫也到达同样级别, 那是lian.tin的任务
 
-#alias {lw.start} {
-    set_last_quest lw;
-    #alias {lw_action} {#cr;};
+#class lingwu open;
+#tab lingwu.start;
+#tab lingwu.stop;
+
+#var lingwu_count 10;
+#var lingwu_max   0;
+
+#alias {lingwu.max} {
+    #if {"%1" != "" && %1 >= 0} {
+        #var lingwu_max %1;
+    };
+    #echo {最高等级(v3) -> ${lingwu_max}};
+};
+
+#alias {lingwu.start} {
     #class lingwu.inner open;
-    #list skills create  {force;cuff;strike;whip;staff;sword;parry;claw;blade;spear;dodge;hammer;hand;finger;dagger;throwing};
-    #list skills size skill_size;
-    #list level_a create {};
-    #list level_b create {};
-    #list level_a clear;
-    #list level_b clear;
-    #loop 1 $skill_size tmp {#list level_b add 0;#list level_a add 0};
-    #var skill_index 1;
-    #list skills get $skill_index skill;
+    #var lingwu_current_level 0;
+    #var lingwu_dolian  0;
 
-    #action {(%*)%s： %S[互备]%s有效等级：} {
-        #var basic_skill %%1;
-        #var special_skill %%3;
-        #list special_skills find ${special_skill} tmp;
-        #if {${tmp} != 0} {
-            #list special_skills_level get ${tmp} tmp_level;
-            record_level_b ${basic_skill} ${tmp_level};
-        };
-    } {1};
-
-    #action {(%*)%s： %S%s有效等级：} {
-        #var basic_skill %%1;
-        #var special_skill %%3;
-        #list special_skills find ${special_skill} tmp;
-        #if {${tmp} != 0} {
-            #list special_skills_level get ${tmp} tmp_level;
-            record_level_b ${basic_skill} ${tmp_level};
-        };
-    } {2};
-
-    #action {│%s%S%s│%S%s│%S│%s%d│%*} {
-        #var basic_skill %%4;
-        #var basic_skill_level %%8;
-        record_level_a  ${basic_skill} ${basic_skill_level};
-    } {3};
-
-    #action {│□%S%s│%S%s│%S│%s%d│%*} {
-        #var special_skill %%1;
-        #var special_skill_level %%7;
-        #list special_skills add ${special_skill};
-        #list special_skills_level add ${special_skill_level};
-    } {2};
-
-    #action {你的技能等级最多能达到%*级} {
-        #var max_level @ctd{%%1};
-    };
-
-    #alias {do_lingwu} {
-        lingwu $skill 100;
-    };
-
-    #alias {do_lian} {
-        lian $skill 50;
-    };
-
-    #alias {get_level_a} {
-        #var skill_level_a 0;
-        #list skills find %%1 tmp_index;
-        #if {$tmp_index != 0} {
-            #list level_a get $tmp_index tmp;
-            #var skill_level_a $tmp;
+    #alias {lingwu.restart} {
+        chifan;
+        goto_lingwu;
+        on_there {
+            unwield all;
+            #if {"${lingwu_gongfu}" == "sword"} {
+                wield sword;
+            };
+            #elseif {"${lingwu_gongfu}" == "blade"} {
+                wield blade;
+                wield dao;
+            };
+            start_ticker;
         };
     };
 
-    #alias {get_level_b} {
-        #var skill_level_b 0;
-        #list skills find %%1 tmp_index;
-        #if {$tmp_index != 0} {
-            #list level_b get $tmp_index tmp;
-            #var skill_level_b $tmp;
-        };
-    };
+    #alias {lingwu.checklevel} {
+        #class lingwu.checklevel.inner open;
 
-    #alias {record_level_a} {
-        #list skills find %%1 tmp_index;
-        #if {$tmp_index != 0} {
-            #list level_a set $tmp_index %%2;
+        #action {│%s%S%s│${lingwu_gongfu}%s│%S│%s%d│%*} {
+            #class lingwu.checklevel.inner kill;
+            #var lingwu_current_level %%%7;
+            
+            show_to_info 领悟/练习: ${lingwu_gongfu}/${lingwu_current_level}/${lingwu_max};
+            #if {${lingwu_max} > 0 && ${lingwu_max} <= ${lingwu_current_level}} {
+                show_to_info 领悟:你的${lingwu_gongfu}满级了;
+                lingwu.stop;
+                #showme 领悟:你的${lingwu_gongfu}满级了;
+            };
+            #else {
+                lingwu.restart;
+            };
         };
-    };
 
-    #alias {record_level_b} {
-        #list skills find %%1 tmp_index;
-        #if {$tmp_index != 0} {
-            #list level_b set $tmp_index %%2;
+        stop_ticker;
+        #if {${lingwu_max} > 0} {
+            #send {sk};
+            #delay {3} {
+            };
         };
+        #else {
+            #class lingwu.checklevel.inner kill;
+            lingwu.restart;
+        };
+        #class lingwu.checklevel.inner close;
     };
 
     #alias {start_ticker} {
-        #ticker {lw_ticker} {
-            #if {${nl_percent} < 10} {
-                stop_ticker;
-                on_there {
-                    sleep;
-                };
-                goto_rest;
-                on_wakeup {
-                    chifan;
-                    on_there {
-                        start_ticker;
-                    };
-                    goto_lingwu;
-                };
+        #ticker {lingwu} {
+            #nop echo {lingwu ${shifu} for ${lingwu_gongfu} ${lingwu_count}};
+            #if {"${lingwu_dolian}" == "0"} {
+              lingwu ${lingwu_gongfu} ${lingwu_count};
             };
             #else {
-                lw_action;
+              lian ${lingwu_gongfu} ${lingwu_count};
             };
         } {1};
     };
 
     #alias {stop_ticker} {
-        #unticker {lw_ticker};
+        #unticker {lingwu};
     };
 
-    #action {必须空手} {
-        unwi;
+    #action {你的%*进步了} {
+        show_to_info %%1 进步了;
+        lingwu.checklevel;
+    };
+
+    #action {无法静下心来领悟功夫} {
+        yun regenerate;
+    };
+
+   #action {{你今天太累了|你的体力不够练|你现在气血虚浮|你的体力太低了}} {
+        yun recover;
+    };
+
+    #action {{你的内力不够|你的真气不够|你现在内力不足}} {
+        stop_ticker;
+        #delay {lingwu_delay} {
+            on_there {
+                sleep;
+            };
+            on_wakeup {
+                lingwu.restart;
+            };
+            goto_rest;
+        } {3};
+    };
+
+    #action {{你的潜能已经发挥到极限了|没有办法学习这种技能|也许是缺乏实战经验}} {
+        lingwu.stop;
+        #showme 领悟:你的${lingwu_gongfu}满级了;
     };
 
     #action {你的基本功夫比你的高级功夫还高} {
-        #if {"${skill}" == "force"} {
-            #math skill_index ${skill_index}+1;
-        };
-        lw.restart;
+        #showme 你该练习特殊技能了;
+        #var lingwu_dolian 1;
+        show_to_info 练习: ${lingwu_gongfu}/${lingwu_current_level}/${lingwu_max};
     };
 
     #action {你需要提高基本功} {
-        lw.restart;
+        #showme 你该领悟基本功了;
+        #var lingwu_dolian 0;
+        show_to_info 领悟: ${lingwu_gongfu}/${lingwu_current_level}/${lingwu_max};
     };
 
-    #alias {lw_next} {
-        stop_ticker;
-        #math skill_index ${skill_index}+1;
-        #if {$skill_index <= $skill_size} {
-            lw.restart;
-        };
-        #else {
-            lw.stop;
-            #showme MISSION_COMPLETE: lw;
-        };
-    };
-
-    #action {必须使用匕首类武器} {
-        wield dagger;
-    };
-
-    #list {lw_next_actions} create {
-        道德小于零才能练这种阴毒功夫;
-        乾坤大挪移心法只能用学习;
-        你使用的武器不对;
-        火候太浅;
-        你不能练;
-        特殊内功无法练习;
-        你现在只能在岳王墓中观看墙壁才能继续提高岳家枪法;
-        你要装备 %* 类武器才能练习;
-        你必须先找一杆枪才能练此枪法;
-        你还没学过这项技能吧;
-        玄铁剑法只能是由杨过进行点拨或亲自到大海中才能锻炼提高！
-    };
-
-    #foreach {${lw_next_actions}[%*]} {lw_next_action} {
-        #action {${lw_next_action}} {
-            lw_next;
-        } {1};
-    };
-    #action {你的「%*」进步了！} {
-        lw.restart;
-    };
+    autoheal.off;
+    #var lingwu_gongfu %1;
+    #var lingwu_count %2;
+    show_to_quest 领悟: ${lingwu_gongfu}/${lingwu_count}/${lingwu_max};
+    lingwu.checklevel;
 
     #class lingwu.inner close;
-    show_to_quest 领悟;
-    on_there {
-        lw.restart;
-    };
-    goto_lingwu;
 };
 
-#alias {lw.stop} {
-    unset_last_quest;
-    stop_ticker;
-    #undelay {lw.restart};
+#alias {lingwu.stop} {
     #class lingwu.inner kill;
+    #unticker {lingwu};
     show_to_quest 领悟结束;
+    autoheal.on;
 };
 
-#alias {lw.restart} {
-    stop_ticker;
-    burden.check {
-        lw.restart.inner;
+#alias {lingwu.full} {
+  #class lingwu.full.inner open;
+  #var lingwu.full.idx 1;
+    
+  #alias {lingwu.full.start} {
+    #list gongfus get ${lingwu.full.idx} {gongfu};
+    lingwu.start ${gongfu} ${lingwu_count};
+  };
+
+  #action {领悟:你的%*满级了} {
+    #math lingwu.full.idx ${lingwu.full.idx} + 1;
+    #list gongfus size lingwu.full.maxsize;
+    #if {${lingwu.full.idx} > ${lingwu.full.maxsize}} {
+        lingwu.full.stop;
     };
-};
-
-#alias {lw.restart.inner} {
-    #if {@getburden{酥油茶} < 30} {
-        lw.stop;
-        chain get.qian get.fan lw.start;
-        #return;
+    #else {
+        #delay {5} {
+            lingwu.full.start;
+        };
     };
-    #list special_skills clear;
-    #list special_skills_level clear;
-    #send {sk};
-    #delay {1} {#send {jifa}};
-    #list skills get $skill_index skill;
-    #delay {lw.restart} {
-        get_level_a $skill;
-        get_level_b $skill;
-        #if {${skill_level_a == 0} || ${skill_level_b} == 0} {
-            #showme {火候太浅};
-            #return;
-        };
-        show_to_quest 领悟 $skill: $skill_level_a / $skill_level_b -> ${max_level};
-        #if {$skill_level_a >= $max_level && $skill_level_b >= $max_level} {
-            #showme {火候太浅};
-            #return;
-        };
+  };
+  #list gongfus create {cuff;claw;dodge;sword;blade};
 
-        unwi;
-        wield ${skill};
-
-        #if {$skill_level_a <= $skill_level_b} {
-            #alias {lw_action} {do_lingwu};
-        };
-        #else {
-            #alias {lw_action} {do_lian};
-        };
-
-        start_ticker;
-    } {2};
+  #var lingwu_count %1;
+  show_to_quest 全面领悟开始;
+  #showme 全面领悟开始;
+  lingwu.full.start;
+  #class lingwu.full.inner close;
 };
-#class lingwu close
+
+#alias {lingwu.full.stop} {
+  lingwu.stop;
+  #class lingwu.full.inner kill;
+  show_to_quest 全面领悟结束;
+  #showme 全面领悟结束;
+};
+
+#class lingwu close;

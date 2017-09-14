@@ -11,36 +11,63 @@
     #echo {du_gongfu -> ${du_gongfu}; du_max -> ${du_max} };
 };
 
-#alias {ds.xxx %1 for %2} {
-    #echo { xxx %1 xxx %2 xxx };
-};
-
 #alias {ds.start %1 for %2} {
     #class dushu.inner open;
     
-    #var ds_caiqi_done 0;
     #var ds_count 5;
     #var ds_current_level 0;
+
+    #alias {du.checklevel.i} {
+        #class du.checklevel.inner kill;
+        show_to_info ${du_gongfu}/${ds_current_level}/${du_max};
+        #if {${du_max} > 0 && ${du_max} <= ${ds_current_level}} {
+            ds.stop;
+            show_to_info 读书:你的${du_gongfu}满级了;
+            #showme 读书:你的${du_gongfu}满级了;
+        };
+        #else {
+            du.restart;
+        };
+    };
 
     #alias {du.checklevel} {
         #class du.checklevel.inner open;
         #action {│%s%S%s│${du_gongfu}%s│%S│%s%d│%*} {
-            #class du.checklevel.inner kill;
+            #if {"${ds_book}" == "tuna"  ||
+                 "${ds_book}" == "dazuo" ||
+                 "${ds_book}" == "dz" } {
+                #return;
+            };
             #var ds_current_level %%%7;
-            show_to_info ${du_gongfu}/${ds_current_level}/${du_max};
-            #if {${du_max} > 0 && ${du_max} <= ${ds_current_level}} {
-                ds.stop;
-                show_to_info 你的${du_gongfu}已经满级了;
-                #showme 你的${du_gongfu}已经满级了;
+            du.checklevel.i;
+        };
+
+        #action {【 内力 】%s%d%s/%s%d%s(} {
+            #if {"${ds_book}" != "dazuo"} {
+                #return;
             };
-            #else {
-                du.restart;
+            #var ds_current_level %%%5;
+            du.checklevel.i;
+        };
+
+        #action {【 精力 】%s%d%s/%s%d%s(} {
+            #if {"${ds_book}" != "tuna"} {
+                #return;
             };
+            #var ds_current_level %%%5;
+            du.checklevel.i;
         };
 
         stop_ticker;
         #if {${du_max} > 0} {
-            #send {sk};
+            #if {"${ds_book}" == "tuna"  ||
+                 "${ds_book}" == "dazuo" ||
+                 "${ds_book}" == "dz" } {
+                #send {hp};
+            };
+            #else {
+                #send {sk};
+            };
             #delay {3} {
             };
         };
@@ -60,50 +87,28 @@
         };
     };
 
-    #alias {du.action} {
-        #if {"${ds_book}" == "shediao"}  {
-            du $ds_book ${ds_count};
-        };
-        #elseif {"${ds_book}" == "tuna"} {
-            tuna ${ds_count};
-        }
-        #elseif {"${ds_book}" == "dazuo"} {
-            dazuo ${ds_count};
-        }
-        #else {
-            du $ds_book for ${ds_count};
-        };
-    };
-
     #alias {du.restart} {
         chifan;
-        goto_rest;
-        on_there {
-            show_to_quest 读书: ${ds_book}/${ds_count};
-            start_ticker;
-        };
+        show_to_quest 读书: ${ds_book}/${ds_count}/${du_max};
+        start_ticker;
     };
 
     #alias {start_ticker} {
         #ticker {ticker_dushu} {
-            #if {"${curr_daytime}" == "正午" ||
-                 "${curr_daytime}" == "午夜"} {
-                #if {"${ds_caiqi_done}" == "0"} {
-                    show_to_quest 读书: ${ds_book}/${ds_count}/采气;
-                    stop_ticker;
-                    caiqi.action;
-                    on_caiqi_finish {
-                        #var ds_caiqi_done 1;
-                        du.restart;
-                    };
-                };
-                #else {
-                    du.action;
-                };
+            #if {"${ds_book}" == "shediao"}  {
+                du $ds_book ${ds_count};
             };
+            #elseif {"${ds_book}" == "tuna"} {
+                tuna ${ds_count};
+            }
+            #elseif {"${ds_book}" == "dazuo"} {
+                dazuo ${ds_count};
+            }
+            #elseif {"${ds_book}" == "dz"} {
+                dz ${ds_count};
+            }
             #else {
-                #var ds_caiqi_done 0;
-                du.action;
+                du $ds_book for ${ds_count};
             };
         } {1};
     };
@@ -119,40 +124,42 @@
         };
     };
 
-    #action {你的%*上限增加了} {
+    #action {你的%*增加了} {
         show_to_info %%1 增加了;
+        #if {${du_max} > 0} {
+            du.checklevel;
+        };
     };
 
-    #action {你的内力不够} {
+    #action {{你现在的气太少了|你的内力不够}} {
         du.sleep;
     };
-
-    #action {你的武功等级受到经验限制} {
-        show_to_info ${du_gongfu}满级了;
-        ds.stop;
-    };
     
-    #action {{你的%*等级已经高于|你的%*修为已经达到了瓶颈}} {
+    #action {{你的%*等级已经高于|你的%*修为已经达到了瓶颈|你的武功等级受到经验限制}} {
         show_to_info %%1 满级了;
         ds.stop;
+        #showme 读书:你的${du_gongfu}满级了;
     };
-
-    #class dushu.inner close;
 
     #var ds_count %2;
     #var ds_book %1;
  
-    #elseif {"${ds_book}" == "tuna" ||
-             "${ds_book}" == "dazuo"} {
-        ds.gongfumax none 0;
-    }
+    #if {"${ds_book}" == "dazuo" ||
+         "${ds_book}" == "dz"} {
+        #nop ds.gongfumax none 0;
+        autoheal.off;
+    };
+
     du.checklevel;
+
+    #class dushu.inner close;
 };
 
 #alias {ds.stop} {
     #class dushu.inner kill;
     #unticker {ticker_dushu};
     show_to_quest 读书结束;
+    autoheal.on;
 };
 
 #alias {ds.full} {
@@ -161,18 +168,18 @@
     #alias {ds.full.du} {
         #list books get ${ds.full.idx} ds_book;
         #if {"${ds_book}" == "shediao"} {
-            ds.gongfumax parry 80;
+            ds.gongfumax parry ${du_max};
         };
         #elseif {"${ds_book}" == "sword book"} {
-            ds.gongfumax sword 80;
+            ds.gongfumax sword ${du_max};
         };
         #elseif {"${ds_book}" == "blade book"} {
-            ds.gongfumax blade 80;
+            ds.gongfumax blade ${du_max};
         };
         ds.start ${ds_book} for ${ds_count};
     };
 
-    #action {满级了} {
+    #action {读书:你的%*满级了} {
         #list books size bookcount;
         #math ds.full.idx ${ds.full.idx}+1;
         #if {${ds.full.idx} > ${bookcount}} {
@@ -186,6 +193,9 @@
     #list books create {sword book;blade book;shediao};
     #var ds.full.idx 1;
     #var ds_count %1;
+
+    show_to_quest 全面读书开始;
+    #showme 全面读书开始;
     ds.full.du;
 
     #class ds.full.inner close;
@@ -195,6 +205,7 @@
   ds.stop;
   #class ds.full.inner kill;
   show_to_quest 全面读书结束;
+  #showme 全面读书结束;
 };
 
 #class dushu close;
