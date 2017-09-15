@@ -42,28 +42,16 @@
             du.checklevel.i;
         };
 
-        #action {【 内力 】%s%d%s/%s%d%s(} {
-            #if {"${ds_book}" != "dazuo"} {
-                #return;
-            };
-            #var ds_current_level %%%5;
-            du.checklevel.i;
-        };
-
-        #action {【 精力 】%s%d%s/%s%d%s(} {
-            #if {"${ds_book}" != "tuna"} {
-                #return;
-            };
-            #var ds_current_level %%%5;
-            du.checklevel.i;
-        };
-
         stop_ticker;
         #if {${du_max} > 0} {
-            #if {"${ds_book}" == "tuna"  ||
-                 "${ds_book}" == "dazuo" ||
-                 "${ds_book}" == "dz" } {
-                #send {hp};
+            #if {"${ds_book}" == "tuna"} {
+                #var ds_current_level ${hpbrief_max_jl};
+                du.checklevel.i;
+            };
+            #elseif {"${ds_book}" == "dazuo" ||
+                     "${ds_book}" == "dz" } {
+                #var ds_current_level ${hpbrief_max_nl};
+                du.checklevel.i;
             };
             #else {
                 #send {sk};
@@ -95,8 +83,8 @@
 
     #alias {start_ticker} {
         #ticker {ticker_dushu} {
-            #if {"${ds_book}" == "shediao"}  {
-                du $ds_book ${ds_count};
+            #if {"${ds_book}" == "shediao" || "${ds_book}" == "tianlong"}  {
+                read $ds_book ${ds_count};
             };
             #elseif {"${ds_book}" == "tuna"} {
                 tuna ${ds_count};
@@ -135,7 +123,7 @@
         du.sleep;
     };
     
-    #action {{你的%*等级已经高于|你的%*修为已经达到了瓶颈|你的武功等级受到经验限制}} {
+    #action {{你的%*等级已经高于|你的%*修为已经达到了瓶颈|你的武功等级受到经验限制|没法再从%*学到任何东西了}} {
         show_to_info %%1 满级了;
         ds.stop;
         #showme 读书:你的${du_gongfu}满级了;
@@ -168,7 +156,10 @@
     #alias {ds.full.du} {
         #list books get ${ds.full.idx} ds_book;
         #if {"${ds_book}" == "shediao"} {
-            ds.gongfumax parry ${du_max};
+            ds.gongfumax force ${du_max};
+        };
+        #elseif {"${ds_book}" == "tianlong"} {
+            ds.gongfumax sword ${du_max};
         };
         #elseif {"${ds_book}" == "sword book"} {
             ds.gongfumax sword ${du_max};
@@ -190,7 +181,8 @@
         };
     };
 
-    #list books create {sword book;blade book;shediao};
+    #nop list books create {sword book;blade book;shediao};
+    #list books create {tianlong;shediao};
     #var ds.full.idx 1;
     #var ds_count %1;
 
