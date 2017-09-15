@@ -1,50 +1,92 @@
-#class fullskill open;
-#tab fsk.start;
-#tab fsk.stop;
+#class myfsk open;
 
-#alias {fsk.start} {
-    @stackcreate{fsk};
-    @stackpush{fsk;dz};
-    @stackpush{fsk;tn};
-    @stackpush{fsk;tl};
-    @stackpush{fsk;lw};
-    #foreach {${fsk}[%*]} {item} {
-        @stackpush{fsk;${item}};
+#alias {tune.off} {
+    #class tune.off.inner open;
+    
+    #action {0(nation)} {
+        #class tune.off.inner kill;
     };
-    #class fsk.inner open;
-    #alias {fsk_next} {
-        #var curr_fsk @stackpoll{fsk};
-        #if {"${curr_fsk}" != "nil"} {
-            ${curr_fsk}${dot}start;
-            on_unbusy {
-                #delay {fsk_delay} {
-                    set_last_quest fsk;
-                } {3};
-            };
-        };
-        #else {
-            fsk.stop;
-        };
+
+    #action {(%S)%s〖开〗} {
+        #echo {turn off %%1};
+        tune %%1;
     };
-    #action {MISSION_COMPLETE} {
-        fsk_next;
-    };
-    #class fsk.inner close;
-    set_last_quest fsk;
-    show_to_quest fsk 开始;
-    fsk_next;
+
+    #send tune;
+    #class tune.off.inner close;
 };
 
-#alias {fsk.stop} {
-    #class fsk.inner kill;
-    #if {"${curr_fsk}" != "nil"} {
-        ${curr_fsk}${dot}stop;
-    };
-    on_unbusy {
-        #delay {fsk_delay} {
-            unset_last_quest;
-            show_to_quest fsk 结束;
-        } {3};
-    };
+#alias {tune.on} {
+    tune.off;
+    tune rw;
+    tune jh;
+    tune bd;
+    tune qy;
+    tune helpme;
+    tune chat;
 };
-#class fullskill close;
+
+#alias {myfsk.start} {
+    #class myfsk.inner open;
+
+    #var myfsk.gongfumax 120;
+    #var myfsk.dzmax 1480;
+
+    #action {全面学习结束} {
+        ds.gongfumax none ${myfsk.gongfumax};
+        gt bs;
+        on_there {
+            getout 2;
+            getout 2;
+            ds.full 5;
+        };
+    };
+
+    #action {全面读书结束} {
+        store tianlong;
+        store shediao;
+        ds.gongfumax dazuo ${myfsk.dzmax};
+        ds.start dazuo for 60;
+    };
+
+    #action {读书:你的dazuo满级了} {
+        ds.gongfumax tuna ${myfsk.dzmax};
+        ds.start tuna for 60;
+    };
+
+    #action {读书:你的tuna满级了} {
+        lingwu.max ${myfsk.gongfumax};
+        lingwu.full 5;
+    };
+
+    #action {全面领悟结束} {
+        lian.full 5;
+    };
+
+    #action {全面练习结束} {
+        #class myfsk.inner kill;
+    };
+
+    gt bs;
+    on_there {
+        get all;
+        #delay {3} {
+            xue.max ${myfsk.gongfumax};
+            xue.full 10;
+        };
+    };
+
+    #class myfsk.inner close;
+};
+
+#alias {myfsk.stop} {
+    #class myfsk.inner kill;
+    gt.stop;
+    xue.full.stop;
+    ds.full.stop;
+    ds.stop;
+    lingwu.full.stop;
+    lian.full.stop;
+};
+
+#class myfsk close;

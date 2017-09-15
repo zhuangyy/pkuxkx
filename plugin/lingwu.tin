@@ -173,7 +173,7 @@
         };
     };
   };
-  #list gongfus create {cuff;claw;dodge;sword;blade};
+  #list gongfus create {cuff;claw;dodge;force;parry;sword;blade};
 
   #var lingwu_count %1;
   show_to_quest 全面领悟开始;
