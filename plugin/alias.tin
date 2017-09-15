@@ -1316,6 +1316,8 @@ walk_to east;
     remove all;
     drop cloth;
     draw sword;
+    draw sword;
+    draw blade;
     draw blade;
     draw armor;
     draw head;
@@ -1323,16 +1325,17 @@ walk_to east;
     draw surcoat;
     draw boots;
     wear all;
+	ss;
+    wi.unfreeze;
     wield qingfeng sword;
     wield dakan dao;
-	ss;
   };
 };
 
 #alias {newbie.food} {
   gt вМоиб╔;
   on_there {
-      buy gan liang 4;
+      buy gan liang 2;
       up;
       buy suanmei tang 10;
   };
