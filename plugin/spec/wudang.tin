@@ -56,7 +56,7 @@
         pfm chan;
     } {1};
     #class attack.inner close;
-		
+
     #if {${xf.type} == 2 || ${xf.type == 4}} {
         #var jiali_count max;
         attack.xf;
@@ -179,8 +179,8 @@
 };
 
 #alias {goto_shifu} {
-    #nop gt {武当山小屋};
-	gt {前院};
+    gt {武当山小屋};
+	#nop gt {前院};
 };
 
 #alias {goto_mz} {
@@ -189,7 +189,7 @@
 
 #list my_weapons_to_wield create {sword;blade;};
 
-#var shifu yu;
+#var shifu zhang;
 
 #alias {reborn} {
     #send {jifa cuff taiji-quan};
@@ -198,9 +198,10 @@
     #send {jifa sword taiji-jian};
     #send {jifa blade xuanxu-dao};
     #send {jifa claw taiji-zhao};
-    #nop #send {jifa force taiji-shengong};
+    #send {jifa force taiji-shengong};
     #nop send {jifa spear yuejia-qiangfa};
-    bei cuff claw;
+    bei cuff
+    bei claw;
 };
 
 stat.register 缠 miss 只听得「铮」一声清响，剧烈碰撞之下你剑诀为敌所破，无以为继，被迫撤剑收招。;
@@ -214,4 +215,5 @@ stat.register 缠 hit 只能见招拆招，疲于应对，不觉已深陷太极剑意之中，无法出招。;
 };
 
 #list fsk create {wd};
+
 #class wudang close
