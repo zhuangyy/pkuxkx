@@ -29,8 +29,9 @@
 #alias {myfsk.start} {
     #class myfsk.inner open;
 
-    #var myfsk.gongfumax 120;
-    #var myfsk.dzmax 1480;
+    #var myfsk.gongfumax 130;
+    #math myfsk.dzmax ${myfsk.gongfumax} * 15 - 10;
+    #math myfsk.dzpot (${myfsk.gongfumax} * 15 * 4 / 100);
 
     #action {全面学习结束} {
         ds.gongfumax none ${myfsk.gongfumax};
@@ -46,12 +47,12 @@
         store tianlong;
         store shediao;
         ds.gongfumax dazuo ${myfsk.dzmax};
-        ds.start dazuo for 60;
+        ds.start dazuo for ${myfsk.dzpot};
     };
 
     #action {读书:你的dazuo满级了} {
         ds.gongfumax tuna ${myfsk.dzmax};
-        ds.start tuna for 60;
+        ds.start tuna for ${myfsk.dzpot};
     };
 
     #action {读书:你的tuna满级了} {
@@ -72,7 +73,7 @@
         get all;
         #delay {3} {
             xue.max ${myfsk.gongfumax};
-            xue.full 10;
+            xue.full 20;
         };
     };
 
