@@ -723,44 +723,55 @@ walk_to east;
         get_exits_done;
     } {7};
 
-    #action {这里唯一的出口是 %w。} {
-        #var exits_list  {%%1;};
+    #action {{这里唯一的(出口|方向)(有|是) ([a-zA-Z0-9]+)。}} {
+        #nop show_to_info { ... %%1 .. %%2 .. %%3 .. %%4 };
+        #var exits_list {%%4;};
         get_exits_done;
     } {7};
 
-    #action {这里明显的出口是 %w 和 %w。} {
-        #var exits_list {%%1;%%2;};
+    #action {{这里明显的(出口|方向)(有|是) ([a-zA-Z0-9]+) 和 ([a-zA-Z0-9]+)。}} {
+        #var exits_list {%%4;%%5;};
         get_exits_done;
     } {7};
 
-    #action {这里明显的出口是 %w、%w 和 %w。} {
-        #var exits_list {%%1;%%2;%%3;};
+    #action {{这里明显的(出口|方向)(有|是) ([a-zA-Z0-9]+)、([a-zA-Z0-9]+) 和 ([a-zA-Z0-9]+)。}} {
+        #var exits_list {%%4;%%5;%%6;};
         get_exits_done;
     } {7};
 
-    #action {这里明显的出口是 %w、%w、%w 和 %w。} {
-        #var exits_list {%%1;%%2;%%3;%%4;};
+    #action {{这里明显的(出口|方向)(有|是) ([a-zA-Z0-9]+)、([a-zA-Z0-9]+)、([a-zA-Z0-9]+) 和 ([a-zA-Z0-9]+)。}} {
+        #var exits_list {%%4;%%5;%%6;%%7;};
         get_exits_done;
     } {7};
 
-    #action {这里明显的出口是 %w、%w、%w、%w 和 %w。} {
-        #var exits_list {%%1;%%2;%%3;%%4;%%5;};
+    #action {{这里明显的(出口|方向)(有|是) ([a-zA-Z0-9]+)、([a-zA-Z0-9]+)、([a-zA-Z0-9]+)、([a-zA-Z0-9]+) 和 ([a-zA-Z0-9]+)。}} {
+        #var exits_list {%%4;%%5;%%6;%%7;%%8;};
         get_exits_done;
     } {7};
 
-    #action {这里明显的出口是 %w、%w、%w、%w、%w 和 %w。} {
-        #var exits_list {%%1;%%2;%%3;%%4;%%5;%%6;};
+    #action {{这里明显的(出口|方向)(有|是) ([a-zA-Z0-9]+)、([a-zA-Z0-9]+)、([a-zA-Z0-9]+)、([a-zA-Z0-9]+)、([a-zA-Z0-9]+) 和 ([a-zA-Z0-9]+)。}} {
+        #var exits_list {%%4;%%5;%%6;%%7;%%8;%%9;};
         get_exits_done;
     } {7};
 
-    #action {这里明显的出口是 %w、%w、%w、%w、%w、%w 和 %w。} {
-        #var exits_list {%%1;%%2;%%3;%%4;%%5;%%6;%%7;};
+    #action {{这里明显的(出口|方向)(有|是) ([a-zA-Z0-9]+)、([a-zA-Z0-9]+)、([a-zA-Z0-9]+)、([a-zA-Z0-9]+)、([a-zA-Z0-9]+)、([a-zA-Z0-9]+) 和 ([a-zA-Z0-9]+)。}} {
+        #var exits_list {%%4;%%5;%%6;%%7;%%8;%%9;%%10;};
         get_exits_done;
     } {7};
 
     #nop max 7 exits;
-    #action {这里明显的出口是 %w、%w、%w、%w、%w、%w、%w} {
-        #var exits_list {%%1;%%2;%%3;%%4;%%5;%%6;%%7;};
+    #action {{这里明显的(出口|方向)(有|是) ([a-zA-Z0-9]+)、([a-zA-Z0-9]+)、([a-zA-Z0-9]+)、([a-zA-Z0-9]+)、([a-zA-Z0-9]+)、([a-zA-Z0-9]+)、([a-zA-Z0-9]+)}} {
+        #var exits_list {%%4;%%5;%%6;%%7;%%8;%%9;%%10;};
+        get_exits_done;
+    } {7};
+
+    #action {{这里明显的(出口|方向)(有|是) ([a-zA-Z0-9]+)、([a-zA-Z0-9]+)、([a-zA-Z0-9]+)、([a-zA-Z0-9]+)、([a-zA-Z0-9]+)、([a-zA-Z0-9]+)、([a-zA-Z0-9]+) 和 ([a-zA-Z0-9]+)。}} {
+        #var exits_list {%%4;%%5;%%6;%%7;%%8;%%9;%%10;%%11};
+        get_exits_done;
+    } {7};
+
+    #action {{这里明显的(出口|方向)(有|是) ([a-zA-Z0-9]+)、([a-zA-Z0-9]+)、([a-zA-Z0-9]+)、([a-zA-Z0-9]+)、([a-zA-Z0-9]+)、([a-zA-Z0-9]+)、([a-zA-Z0-9]+)、([a-zA-Z0-9]+) 和 ([a-zA-Z0-9]+)。}} {
+        #var exits_list {%%4;%%5;%%6;%%7;%%8;%%9;%%10;%%11;%%12;};
         get_exits_done;
     } {7};
 

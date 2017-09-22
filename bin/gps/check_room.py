@@ -28,6 +28,7 @@ def check_room (conn, zone, room, desc, exits):
     if len(rows) == 1:
         return rows[0][0]
     
+    exits = fixup_exits(exits)
     sql = "select roomno from mud_room where roomname = '%s' and description = '%s' and exits = '%s'" % (room, desc, exits)
     rows = conn.execute(sql).fetchall();
     if len(rows) == 1:

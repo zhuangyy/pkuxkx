@@ -9,6 +9,7 @@ def update_room (conn, roomno, zone, room, desc, exits):
     room = fixup_encode(room)
     zone = fixup_encode(zone)
     desc = fixup_encode(desc)
+    exits = fixup_exits(exits)
     if roomno != 0:
         sql = "insert or replace into mud_room values (%d, '%s', '%s', '%s', '%s', NULL, NULL)" % (roomno, room, desc, exits, zone)
         conn.execute(sql)

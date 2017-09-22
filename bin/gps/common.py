@@ -109,6 +109,9 @@ def fixup_room(room):
 
     return room
 
+def fixup_exits(s):
+    return ";".join(sorted(s.strip(";").split(";"))) + ";"
+
 def get_zone(conn, room):
     sql = "select zone from mud_room where roomno = %d" % (room)
     row = conn.execute(sql).fetchone()

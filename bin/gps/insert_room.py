@@ -8,6 +8,7 @@ def insert_room (conn, room, desc, exits, zone):
     room = fixup_encode(room)
     desc = fixup_encode(desc)
     zone = fixup_encode(zone)
+    exits = fixup_exits(exits)
     sql = "insert into mud_room values (NULL, '%s', '%s', '%s', '%s', NULL, NULL)" % (room, desc, exits, zone)
     conn.execute(sql)
     conn.commit()
