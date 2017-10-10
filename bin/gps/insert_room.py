@@ -3,6 +3,7 @@ import sqlite3
 import os
 import sys
 from .common import open_database
+from .common import *
 
 def insert_room (conn, room, desc, exits, zone):
     room = fixup_encode(room)

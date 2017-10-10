@@ -3,6 +3,7 @@ import sqlite3
 import os
 import sys
 from .common import open_database
+from .common import *
 from .insert_room import insert_room
 
 def update_room (conn, roomno, zone, room, desc, exits):
