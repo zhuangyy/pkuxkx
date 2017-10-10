@@ -1,6 +1,6 @@
 #class gps_actions open;
 
-#alias gps.clear gps.force_clear;
+#alias gps.clear gps.run;
 #alias {gps.force_clear} {
     clear %0;
     on_cleared {
@@ -257,7 +257,9 @@
         #action {这里的花丛（huacong）比别的地方} {
             #class gps.action.inner kill;
             on_unbusy {
-                ${current_direction};
+                bo huacong;
+                enter;
+                #nop ${current_direction};
                 gps.run;
             };
         } {8};

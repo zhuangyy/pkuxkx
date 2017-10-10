@@ -26,11 +26,38 @@
     };
 };
 
+#var caiqi_done 0;
+#alias {caiqi.auto} {
+    #alias tmp_caiqi_auto #cr;
+    #alias tmp_caiqi_auto %0;
+    #class caiqi.auto.inner open;
+
+    #if {"${curr_daytime}" == "正午" || "${curr_daytime}" == "午夜"} {
+        #if {"${caiqi_done}" == "0" && "${char_menpai}" == "wudang"} {
+            show_to_info 采气(${curr_daytime});
+            caiqi.action;
+            on_caiqi_finish {
+                show_to_info 采气结束(${curr_daytime});
+                #var caiqi_done 1;
+                tmp_caiqi_auto;
+            };
+        };
+        #else {
+            tmp_caiqi_auto;
+        };
+    };
+    #else {
+        #var caiqi_done 0;
+        tmp_caiqi_auto;
+    };
+    #class caiqi.auto.inner close;
+};
+
 #alias {cq} {
-    show_to_quest 采气;
+    show_to_info 采气;
     caiqi.action;
     on_caiqi_finish {
-        show_to_quest 采气结束; 
+        show_to_info 采气结束; 
     };
 };
 

@@ -75,6 +75,7 @@
 #var mj_started 0;
 #alias {mj.start} {
     #if {${mj_started} == 0} {
+        show_to_info 注意:有明教;
         #var mj_started 1;
         raw;
         war;
@@ -233,7 +234,7 @@
 
 #alias {attack.end} {#cr};
 
-#action {乾坤大挪移自然激发而出，将你的攻势反击了回去。} {
+#action {{乾坤大挪移自然激发而出，将你的攻势反击了回去|乾坤大挪移自然激发而出，将你的攻势大半移了开去}} {
     mj.start;
 };
 
