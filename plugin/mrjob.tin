@@ -1,6 +1,6 @@
 #class murong.job open;
 
-#alias {mrjob.ask} {
+#alias {mrjob.q} {
   #class mrjob.ask.inner open;
 
   #action {慕容世家家贼死了} {
@@ -10,23 +10,34 @@
     };
   };
 
+  #action {找到目标} {
+    l;
+  };
+
   #action {家贼难防，有人偷走了少爷的信件，据传曾在『%*』附近出现} {
     show_to_quest 慕容任务 %%1;
     gt %%1;
+    on_there {
+      mrjob.s;
+    };
   };
 
-  #action {Orrta's murong jiazei} {
-    wi;
-    wi.freeze;
+  #action {${char_name}发现的 慕容世家家贼} {
+    bl.stop;
     kill jiazei;
   };
 
   gt 苏州茶馆;
   on_there {
+    chifan;
     ask pu ren about job;
   };
 
   #class mrjob.ask.inner close;
+};
+
+#alias {mrjob.s} {
+  bl.start 慕容世家家贼;
 };
 
 #alias {mrjob.success} {
@@ -39,7 +50,19 @@
   };
 
   #action {仆人看着你会心地一笑} {
+    #class mrjob.success.inner kill;
     show_to_quest 慕容任务成功;
+    #if {${mrjob.q.loop} == 1} {
+      mrjob.q;
+    };
+  };
+
+  #action {仆人对着你摇了摇头说：「你刚做过任务，先去休息休息吧。」} {
+    #if {${mrjob.q.loop} == 1} {
+      #delay {10} {
+        mrjob.q;
+      };
+    };
   };
 
   get all from corpse;
@@ -52,6 +75,13 @@
   #class mrjob.success.inner close;
 };
 
+#alias {mrjob.f} {
+  gt 苏州茶馆;
+  on_there {
+    ask pu ren about fail;
+  };
+};
+
 #alias {mrjob.rest} {
   gt 南昌休息室;
   on_there {
@@ -60,6 +90,12 @@
   on_wakeup {
     dazuo 400;
   };
+};
+
+#var mrjob.q.loop 1;
+#alias {mrjob.loop} {
+  #var mrjob.q.loop %1;
+  #echo {mrjob.q.loop = ${mrjob.q.loop}};
 };
 
 #class murong.job close;

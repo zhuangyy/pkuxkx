@@ -1321,14 +1321,12 @@ walk_to east;
     @clearenv{hb_lunci_total};
 };
 
-#alias {newbie.suit} {
+#alias {my.suit} {
   gt ∑¢¥Ù “;
   on_there {
     remove all;
     drop cloth;
     draw sword;
-    draw sword;
-    draw blade;
     draw blade;
     draw armor;
     draw head;
@@ -1343,7 +1341,7 @@ walk_to east;
   };
 };
 
-#alias {newbie.food} {
+#alias {my.food} {
   gt ◊Ìœ…¬•;
   on_there {
       buy gan liang 2;
@@ -1352,3 +1350,32 @@ walk_to east;
   };
 };
 
+#alias {my.gold} {
+  gt —Ô÷›«Æ◊Ø;
+  on_there {
+      qu 95 silver;
+      qu 4 gold;
+  };
+};
+
+#alias {my.xtj} {
+    gt —Ô÷›Œ‰√Ì;
+    on_there {
+        l gongde xiang;
+        get xuantie sword from gongde xiang;
+        unwield all;
+        wield xuantie sword;
+    };
+};
+
+#alias {path.s} {
+  #path {new};
+};
+
+#alias {path.r} {
+  #path {map}
+  #path {save} backward tmpath.forward;
+  #path {save} backward tmpath.bakward;
+  #path {load} tmpath.bakward;
+  #path {run};
+};

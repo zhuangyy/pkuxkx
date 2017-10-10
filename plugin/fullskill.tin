@@ -29,7 +29,8 @@
 #alias {myfsk.start} {
     #class myfsk.inner open;
 
-    #var myfsk.gongfumax 130;
+    #var myfsk.gongfumax 135;
+    #var myfsk.gongfumax %1;
     #math myfsk.dzmax ${myfsk.gongfumax} * 15 - 10;
     #math myfsk.dzpot (${myfsk.gongfumax} * 15 * 4 / 100);
 

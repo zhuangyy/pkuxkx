@@ -1,57 +1,63 @@
 #class qiu open
+
 #alias {qiu.q} {
     #class qiu.inner open;
-    #action {面露娇羞之色，悄悄的低下头去} {
+
+    #action {{藏宝箱\(Cangbao xiang\)|面露娇羞之色，悄悄的低下头去}} {
         qiu.n;
     };
 
-    #action {我先闪了！} {
-        rob biao dui;
-        #delay {5} {war};
+    #action {你快抢(rob)镖队，我先闪了} {
+        qiu.n;
     };
 
-    #action {我已经派了一个探子} {
+    #action {我已经派了一个探子名叫%*在%*的%*附近接应} {
         #var qiu.type 4;
+        show_to_quest 劫镖 %%2%%3(%%1);
+        gt %%2%%3;
     };
 
-    #action {裘千丈在你耳边告诉了开宝箱的方法} {
+    #action {寨中兄弟多方打探，探到宝箱最近在%*的%*出现，你去帮忙找回来吧} {
         #var qiu.type 3;
+        show_to_quest 宝箱 %%1%%2;
+        gt %%1%%2;
     };
 
-    #action {我们当家的想找一位压寨夫人} {
+    #action {有探子探到最近经常有美女在%*的%*附近游玩，你赶快去把她抢回来} {
         #var qiu.type 2;
+        show_to_quest 抢人 %%1%%2;
+        gt %%1%%2;
     };
 
     #action {你去把%*(%*)给我干掉，提他的脑袋来见我} {
         #var qiu.type 1;
-        #var qiu.killer %%1;
+        show_to_quest 杀人 %%1(%%2);
+        #var qiu.killer %%2;
         #action {%%1死了。$}{
             #unaction {%%1死了。$};
             qiu.n;
         } {1};
+    };
 
-};
+    #action {裘千丈摇头道：目前没什么任务可以吩咐你的，你休息一下吧!} {
+        #nop dazuo 500;
+    };
 
-#action {「肉掌水底钻」裘千丈} {
-    qiu.d;
-};
+    gt 望江亭;
+    on_there {
+        ask qiu about 投名状;
+    };
 
-#action {Cangbao xiang} {
-    qiu.n;
-};
-#class qiu.inner close;
-
-ask qiu about 投名状;
+    #class qiu.inner close;
 };
 
 #alias {qiu.b} {
-    gt qiu;
+    gt 望江亭;
 };
 
 #var qiu.type 0;
 
-
-#alias {qiu.n} {
+#alias {qiu.action} {
     #if {${qiu.type} == 1} {
         cut corpse;
         #delay {1} {get shouji};
@@ -68,6 +74,32 @@ ask qiu about 投名状;
     };
 };
 
+#alias {qiu.n} {
+    #class qiu.n.inner open;
+    #action {你见已经无人保护，将所带的财物全都拿在怀里，顺手将镖车砸了个稀巴烂} {
+        qiu.d;
+    };
+    
+    #action {你将%*扶了起来背在背上} {
+        qiu.d;
+    };
+
+    #action {你欣喜的从宝箱中拿出镇山之宝，藏在怀中，顺势一脚把宝箱踢到路边} {
+        qiu.d;
+    };
+
+    #action {{你捡起一颗.*的首级|将血淋淋的首级提在手中}} {
+        qiu.d;
+    };
+
+    #action {%*死了。} {
+        qiu.action;     
+    };
+
+    qiu.action;
+    #class qiu.n.inner close;
+};
+
 #alias {qiu.bl} {
     #if {${qiu.type} == 1} {
         bl.start ${qiu.killer};
@@ -76,7 +108,7 @@ ask qiu about 投名状;
         bl.start Beauty;
     };
     #elseif {${qiu.type} == 3} {
-        bl.start 宝箱;
+        bl.start 藏宝箱;
     };
     #elseif {${qiu.type} == 4} {
         bl.start 铁掌帮;
@@ -84,24 +116,32 @@ ask qiu about 投名状;
 };
 
 #alias {qiu.d} {
-    #if {${qiu.type} == 1} {
-        give shouji to qiu;
+    #class qiu.n.inner kill;
+    gt 望江亭;
+    on_there {
+        #if {${qiu.type} == 1} {
+            give shouji to qiu;
+        };
+        #elseif {${qiu.type} == 2} {
+            give beauty girl to qiu;
+        };
+        #elseif {${qiu.type} == 3} {
+            give baobei to qiu;
+        };
+        #elseif {${qiu.type} == 4} {
+            give qiu hong huo;
+        };
+        #class qiu.inner kill;
     };
-    #elseif {${qiu.type} == 2} {
-        give beauty girl to qiu;
-    };
-    #elseif {${qiu.type} == 3} {
-        give baobei to qiu;
-    };
-    #elseif {${qiu.type} == 4} {
-        give qiu hong huo;
-    };
-    #class qiu.inner kill;
 };
 
 #alias {qiu.f} {
-    ask qiu about 失败;
-    #class qiu.inner kill;
+    #class qiu.n.inner kill;
+    gt 望江亭;
+    on_there {
+        ask qiu about 失败;
+        #class qiu.inner kill;
+    };
 };
 
 #class qiu close
