@@ -19,7 +19,7 @@
 #alias {chifan} {
     #nop #6 {drink cha};
     #if {$water < 100} {
-        #10 {drink tang};
+        #10 {drink jiudai};
     };
     #if {$food < 100} {
         #5 {eat gan liang};
@@ -1345,8 +1345,15 @@ walk_to east;
   gt ×íÏÉÂ¥;
   on_there {
       buy gan liang 2;
-      up;
-      buy suanmei tang 10;
+      #delay {3} {
+        buy jiudai;
+        gt ´ºÀ´²è¹Ý;
+        on_there {
+          fill jiudai;  
+        };
+      };
+      #nop up;
+      #nop buy suanmei tang 10;
   };
 };
 
@@ -1378,4 +1385,34 @@ walk_to east;
   #path {save} backward tmpath.bakward;
   #path {load} tmpath.bakward;
   #path {run};
+};
+
+#alias {mx.start} {
+    #class mx.inner open;
+
+    #alias {mx.restart} {
+        #ticker {ticker.mogaoku.mingxiang} {
+            chifan;
+            mingxiang;
+        } {5};
+    };
+
+    #action {ºÜÃ÷ÏÔ,ÄãÏÖÔÚÌ«ÀÛÁË} {
+        #unticker {ticker.mogaoku.mingxiang};
+        #delay {5} {
+            tuna 100;
+        };
+    };
+
+    #action {ÄãÍÂÄÉÍê±Ï£¬Õö¿ªË«ÑÛ£¬Õ¾ÁËÆðÀ´} {
+        mx.restart;
+    };
+
+    mx.restart;
+    #class mx.inner close;
+};
+
+#alias {mx.stop} {
+    #unticker {ticker.mogaoku.mingxiang};
+    #class mx.inner kill;
 };

@@ -91,6 +91,7 @@
 
 		#action {你诵唱完了整段经书} {
 			#class chongxu.sj.check kill;
+			show_to_info 诵经结束;
 			chongxu.q.success;
 		};
 
@@ -235,8 +236,9 @@
 			east; zhenfa;
 		};
 		#action {演习阵法的教习都在使用中} {
-			show_to_info 阵法取消;
-			chongxu.q.cancel;
+			#delay {5} {
+					zhenfa.start;
+			};
 		};
 		#action {请等对方演习结束再进去吧} {
 			#delay {5} {
@@ -315,15 +317,14 @@
 		};
 
 		#alias {xk_ticker.start} {
-			#echo {%1 - %2 - %%1 - %%%1 - %%%%1};
 			#ticker {xk_zoudong} {
 				#if {${xk_last_direction} == 0} {
 					#var xk_last_direction 1;
-					%1;
+					%%%1;
 				};
 				#else {
 					#var xk_last_direction 0;
-					%2;
+					%%%2;
 				};
 			} {4};
 		};
@@ -351,16 +352,12 @@
 			};
 		};
 
-		#action {看起来土匪想杀死你} {
-			killall tufei;
+		#action {%*把路一挡，狞笑道} {
+			killall;
 		};
 
-		#action {看起来小土匪想杀死你} {
-			killall xiao tufei;
-		};
-
-		#action {看起来小喽啰想杀死你} {
-			killall xiao louluo;
+		#action {看起来%*想杀死你} {
+			killall;
 		};
 
 		#action {你寡不敌众被抓到土匪窝里} {

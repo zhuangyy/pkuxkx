@@ -2,6 +2,16 @@
 #var jiali_count 50;
 
 #alias {attack.prepare} {
+	#if {${mj_started} != 1} {
+        wi.freeze;
+        wield sword;
+        wield blade;
+        wield dao;
+    };
+    #else {
+        #var jiali_count max;
+        wi.unfreeze;
+    };
     yun powerup;
 };
 
@@ -14,19 +24,19 @@
 	};
 	#class attack.inner open;
 	#if {${mj_started} == 1} {
-		#ticker {wuying} {
+		#ticker {attack.ticker.wuying} {
 			pfm wuying;
 		} {5.8};
 	};
 	#else {
-		#ticker {wuying} {
+		#ticker {attack.ticker.wuying} {
 			pfm wuying;
 		} {2.8};
 		#ticker {lzj} {
 			pfm lzj;
 		} {3.8};
 	};
-	#ticker {gr} {
+	#ticker {attack.ticker.gr} {
 		pfm gangrou;
 	} {4.8};
 	#class attack.inner close;
@@ -35,15 +45,15 @@
 #alias {attack.xf} {
 	pfm wuying;
 	#class attack.inner open;
-	#ticker {wuying} {
-			pfm wuying;
+	#ticker {attack.ticker.wuying} {
+		pfm wuying;
 	} {2.8};
 	#class attack.inner close;
 };
 
 #alias {attack.auto} {
-	#ticker {lzj} {
-		pfm lzj;
+	#ticker {attack.ticker.sanhuan} {
+		pfm sanhuan;
 	} {2.8};
 };
 
@@ -52,7 +62,7 @@
     pfm zong;
 
     #class attack.inner open;
-    #ticker {perf_chan} {
+    #ticker {attack.ticker.chan} {
         pfm chan;
     } {1};
     #class attack.inner close;
@@ -70,6 +80,13 @@
     #else {
         attack.auto;
     };
+};
+
+#alias {attack.pfm.off} {
+    #unticker attack.ticker.chan;
+    #unticker attack.ticker.wuying;
+    #unticker attack.ticker.gr;
+    #untikcer attack.ticker.sanhuan;
 };
 
 #var shortcut F1:²ø F2:ÎÞÓ° F3:Á¬×Ö¾÷ F4:¸ÕÈá;
@@ -116,7 +133,7 @@
 };
 
 #alias {zong} {
-    #nop send {perform tiyunzong.zong};
+    #send {perform tiyunzong.zong};
 };
 
 #alias {lzj} {

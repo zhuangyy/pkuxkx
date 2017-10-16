@@ -17,10 +17,13 @@
         gt %%2%%3;
     };
 
-    #action {寨中兄弟多方打探，探到宝箱最近在%*的%*出现，你去帮忙找回来吧} {
+    #action {寨中兄弟多方打探，探到宝箱最近在%*出现，你去帮忙找回来吧} {
         #var qiu.type 3;
-        show_to_quest 宝箱 %%1%%2;
-        gt %%1%%2;
+        #var qiu.dest %%1;
+        #replace {qiu.dest} {的} {};
+        #replace {qiu.dest} {湟中} {湟中城};
+        show_to_quest 宝箱 ${qiu.dest};
+        gt ${qiu.dest};
     };
 
     #action {有探子探到最近经常有美女在%*的%*附近游玩，你赶快去把她抢回来} {
